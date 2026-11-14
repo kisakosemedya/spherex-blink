@@ -1,0 +1,26 @@
+{
+ "name": "epsindb",
+ "ra": 331.0961,
+ "dec": -56.801,
+ "detector": 6,
+ "fov_arcsec": 200.0,
+ "arcsec_per_pixel": 3.0,
+ "visits": [
+  {
+   "date": "2025-05-06",
+   "n_images": 24
+  },
+  {
+   "date": "2025-10-06",
+   "n_images": 22
+  },
+  {
+   "date": "2026-04-29",
+   "n_images": 11
+  },
+  {
+   "date": "2026-09-25",
+   "n_images": 34
+  }
+ ]
+}

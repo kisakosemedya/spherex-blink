@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="tr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Katman denemesi</title>
+<style>
+  body { font: 15px/1.45 system-ui, sans-serif; background: #0d1117; color: #e6edf3; margin: 0; padding: 16px; }
+  main { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; }
+  #view { position: relative; width: 500px; height: 500px; max-width: 100%; background: #000; }
+  #view img, #view svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #view img { image-rendering: pixelated; }
+  .panel { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px; max-width: 340px; }
+  .panel h2 { font-size: 1em; margin: 0 0 .5em; }
+  button { font: inherit; padding: 4px 10px; margin: 0 4px 8px 0; }
+  button[aria-pressed="true"] { outline: 2px solid #4cc9f0; }
+</style>
+<h1 style="font-size:1.1em">Gaia ve şüpheli piksel katmanları denemesi (çekirdek site gelene kadar)</h1>
+<p>
+  <button data-target="barnard">Barnard Yıldızı (D2)</button>
+  <button data-target="wise0855">WISE 0855 (D6)</button>
+  <button data-target="epsindb">Epsilon Indi B (D6)</button>
+  <button data-target="rwaur">RW Aurigae (D3)</button>
+  <button data-target="rdra">R Draconis (D2)</button>
+</p>
+<p id="frames"></p>
+<main>
+  <div id="view"><img id="img" alt=""><svg id="overlay" viewBox="0 0 500 500"></svg></div>
+  <div id="panels"></div>
+</main>
+<script type="module">
+  import { init as initGaia } from "/frontend/modules/gaia.js";
+  import { init as initFlags } from "/frontend/modules/flags.js";
+
+  // Minimal stand-in for the core `app` object described in ekip/00_ORTAK_BAGLAM.md
+  const TARGETS = {
+    barnard: { name: "Barnard", ra: 269.4462, dec: 4.7688, det: 2, fov: 150,
+      visits: [{ date: "2025-08-26" }, { date: "2026-03-17" }, { date: "2026-08-23" }] },
+    wise0855: { name: "WISE 0855", ra: 133.7598, dec: -7.2422, det: 6, fov: 150,
+      visits: [{ date: "2025-05-05" }, { date: "2025-11-16" }, { date: "2026-04-27" }] },
+    epsindb: { name: "Epsilon Indi B", ra: 331.0961, dec: -56.8010, det: 6, fov: 200,
+      visits: [{ date: "2025-05-06" }, { date: "2025-10-06" }, { date: "2026-04-29" }, { date: "2026-09-25" }] },
+    rwaur: { name: "RW Aurigae", ra: 76.9561, dec: 30.4012, det: 3, fov: 150,
+      visits: [{ date: "2025-09-18" }, { date: "2026-02-25" }, { date: "2026-09-15" }] },
+    rdra: { name: "R Draconis", ra: 248.1674, dec: 66.7550, det: 2, fov: 150,
+      visits: [{ date: "2025-06-15" }, { date: "2025-12-05" }, { date: "2026-06-22" }] },
+  };
+
+  const SIZE = 500, handlers = {};
+  const app = {
+    state: { frameIndex: 0, visits: [] },
+    on: (ev, fn) => (handlers[ev] ||= []).push(fn),
+    emit: (ev, arg) => (handlers[ev] || []).forEach((fn) => fn(arg)),
+    overlay: document.getElementById("overlay"),
+    addPanel(id, title) {
+      const box = document.createElement("section");
+      box.className = "panel";
+      box.innerHTML = `<h2>${title}</h2><div></div>`;
+      document.getElementById("panels").appendChild(box);
+      return box.lastElementChild;
+    },
+    skyToPixel(ra, dec) { // north up, east left
+      const s = app.state, k = SIZE / s.fov;
+      const dx = ((ra - s.ra + 540) % 360 - 180) * Math.cos(s.dec * Math.PI / 180) * 3600;
+      return { x: SIZE / 2 - dx * k, y: SIZE / 2 - (dec - s.dec) * 3600 * k };
+    },
+  };
+
+  function showFrame(i) {
+    app.state.frameIndex = i;
+    const img = document.getElementById("img");
+    img.src = `/dev/demo_frames/${app.state.key}_${i}.png`;
+    document.querySelectorAll("#frames button").forEach((b, j) => b.setAttribute("aria-pressed", j === i));
+    app.emit("frame", i);
+  }
+  function setTarget(key) {
+    Object.assign(app.state, TARGETS[key], { key, frameIndex: 0 });
+    const bar = document.getElementById("frames");
+    bar.replaceChildren(...app.state.visits.map((v, i) => {
+      const b = document.createElement("button");
+      b.textContent = v.date;
+      b.onclick = () => showFrame(i);
+      return b;
+    }));
+    app.emit("target");
+    showFrame(0);
+  }
+  document.querySelectorAll("[data-target]").forEach((b) => (b.onclick = () => setTarget(b.dataset.target)));
+  initGaia(app);
+  initFlags(app);
+  setTarget("barnard");
+</script>
+</html>

@@ -1,0 +1,22 @@
+{
+ "name": "wise0855",
+ "ra": 133.7598,
+ "dec": -7.2422,
+ "detector": 6,
+ "fov_arcsec": 150.0,
+ "arcsec_per_pixel": 3.0,
+ "visits": [
+  {
+   "date": "2025-05-05",
+   "n_images": 3
+  },
+  {
+   "date": "2025-11-16",
+   "n_images": 21
+  },
+  {
+   "date": "2026-04-27",
+   "n_images": 21
+  }
+ ]
+}

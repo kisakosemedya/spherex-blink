@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+numpy
+astropy
+reproject
+fsspec
+aiohttp
+pillow

@@ -1,0 +1,22 @@
+{
+ "name": "rdra",
+ "ra": 248.1674,
+ "dec": 66.755,
+ "detector": 2,
+ "fov_arcsec": 150.0,
+ "arcsec_per_pixel": 3.0,
+ "visits": [
+  {
+   "date": "2025-06-15",
+   "n_images": 21
+  },
+  {
+   "date": "2025-12-05",
+   "n_images": 37
+  },
+  {
+   "date": "2026-06-22",
+   "n_images": 19
+  }
+ ]
+}

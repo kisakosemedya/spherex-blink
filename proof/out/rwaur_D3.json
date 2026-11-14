@@ -1,0 +1,22 @@
+{
+ "name": "rwaur",
+ "ra": 76.9561,
+ "dec": 30.4012,
+ "detector": 3,
+ "fov_arcsec": 150.0,
+ "arcsec_per_pixel": 3.0,
+ "visits": [
+  {
+   "date": "2025-09-18",
+   "n_images": 18
+  },
+  {
+   "date": "2026-02-25",
+   "n_images": 19
+  },
+  {
+   "date": "2026-09-15",
+   "n_images": 18
+  }
+ ]
+}

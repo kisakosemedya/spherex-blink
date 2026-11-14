@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SPHEREx Blink</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>SPHEREx Blink</h1>
+    <p class="tagline" data-t="tagline"></p>
+  </div>
+  <a class="lang" id="lang"></a>
+</header>
+
+<section class="intro" id="intro">
+  <ol>
+    <li data-t="step1"></li>
+    <li data-t="step2"></li>
+    <li data-t="step3"></li>
+  </ol>
+</section>
+
+<form class="search" id="search">
+  <label for="q" data-t="searchLabel"></label>
+  <div class="row">
+    <input id="q" autocomplete="off" spellcheck="false">
+    <button type="submit" data-t="searchButton"></button>
+  </div>
+  <p class="hint" data-t="searchHint"></p>
+</form>
+
+<nav class="presets" id="presets" aria-label="test targets"></nav>
+
+<main>
+  <section class="viewer">
+    <div class="stage" id="stage">
+      <canvas id="canvas" width="50" height="50"></canvas>
+      <svg id="overlay" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+        <g id="compass"></g>
+      </svg>
+      <div class="veil" id="veil" hidden><p id="veilText"></p></div>
+    </div>
+
+    <div class="frames" id="frames"></div>
+
+    <div class="controls">
+      <button id="prev" type="button">◀</button>
+      <button id="play" type="button"></button>
+      <button id="next" type="button">▶</button>
+      <button id="diff" type="button" aria-pressed="false" data-t="diffButton"></button>
+    </div>
+    <p class="legend" id="diffLegend" hidden data-t="diffLegend"></p>
+
+    <div class="settings">
+      <label><span data-t="speed"></span>
+        <input id="speed" type="range" min="150" max="1500" step="50" value="700"></label>
+      <label><span data-t="brightness"></span>
+        <input id="stretch" type="range" min="-10" max="20" step="1" value="0"></label>
+      <label><span data-t="band"></span>
+        <select id="det"></select></label>
+      <label><span data-t="fov"></span>
+        <select id="fov">
+          <option value="90">90″</option><option value="150" selected>150″</option>
+          <option value="300">300″</option><option value="600">600″</option>
+        </select></label>
+    </div>
+  </section>
+
+  <aside class="side">
+    <section class="panel" id="about">
+      <h2 id="targetName"></h2>
+      <p id="targetBlurb"></p>
+      <p class="meta" id="targetMeta"></p>
+      <button id="share" type="button" data-t="share"></button>
+    </section>
+    <div id="panels"></div>
+  </aside>
+</main>
+
+<footer>
+  <p data-t="credit"></p>
+</footer>
+<script type="module" src="app.js"></script>
+</body>
+</html>

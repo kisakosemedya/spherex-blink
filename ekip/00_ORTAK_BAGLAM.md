@@ -59,12 +59,12 @@ Hedef kullanıcı astronomi bilmeyen bir gönüllü. Her ekran ve her metin buna
 | Hedef | RA (derece) | Dec (derece) | Ne beklenir | Not |
 |---|---|---|---|---|
 | Barnard Yıldızı | 269.4462 | 4.7688 | Bir yılda yaklaşık 10,6″ kuzeye kayar | DOĞRULANDI: D2'de 59 poz, ziyaretler 2025-08-26, 2026-03-17, 2026-08-23 |
-| WISE 0855−0714 | 133.768 | −7.243 | Yılda yaklaşık 8″ batıya kayar; yalnızca D6'da görünür, çok sönük | Konum 2026'ya yaklaşık olarak taşındı; görev metnindeki konum (133.7951, −7.2451) eski tarihli |
-| Epsilon Indi B | 331.097 | −56.801 | Yılda yaklaşık 4,7″ kayar; sınırda | Konum yaklaşık; ana yıldız Eps Indi A yaklaşık 400″ uzakta |
-| RW Aurigae | 76.9563 | 30.4014 | Yerinde durur, parlaklığı düzensiz değişir | |
-| R Draconis | 248.1675 | 66.7550 | Yerinde durur, parlaklığı yaklaşık 8 ayda bir döngüyle değişir | Derin alanda: bazı dedektörlerde 570'ten fazla poz |
+| WISE 0855−0714 | 133.7598 | −7.2422 | Yılda yaklaşık 8″ batıya kayar; yalnızca D6'da görünür | DOĞRULANDI (D6): Kasım 2025 → Nisan 2026 arasında 3,4″ batıya kaydı. Görev metnindeki konum (133.7951, −7.2451) 2010 tarihli; cisim bugün oradan yaklaşık 127″ batıda. DİKKAT: 2026'da 7″ yakınında bir Gaia yıldızı var (G=16,3); kısa dalga boyunda görünen o, D6'da hareket eden ise WISE 0855 |
+| Epsilon Indi B | 331.0961 | −56.8010 | Yılda yaklaşık 4,7″ güneydoğuya kayar | DOĞRULANDI (D6): Mayıs 2025 → Eylül 2026 arasında 6,5″ kaydı; 4 ziyaret var. Gaia'da karşılığı yok. Konum, ana yıldızın Gaia hareketiyle 2026'ya taşındı |
+| RW Aurigae | 76.9561 | 30.4012 | Yerinde durur, parlaklığı düzensiz değişir | DOĞRULANDI (D3): üç ziyarette göreli parlaklık 1,00 / 1,21 / 1,10. Gaia'da 1,4″ arayla iki bileşen |
+| R Draconis | 248.1674 | 66.7550 | Yerinde durur, parlaklığı yaklaşık 8 ayda bir döngüyle değişir | DOĞRULANDI (D2): üç ziyarette göreli parlaklık 1,00 / 0,70 / 0,46. Merkezi doygun; ölçüm çevresindeki halkadan. Derin alanda: bazı dedektörlerde 570'ten fazla poz |
 
-Yaklaşık koordinatları kullanmadan önce CDS Sesame (`https://cds.unistra.fr/cgi-bin/nph-sesame/-oxp/SNV?<isim>`) ya da SIMBAD ile doğrula. Hızlı hareket eden cisimlerde katalog konumu eski tarihli olabilir; öz hareketle bugüne taşımak gerekir.
+Koordinatlar ESA Gaia arşivinden doğrulandı (CDS/SIMBAD 14 Kasım'da kapalıydı). Yeni bir hedef için CDS Sesame (`https://cds.unistra.fr/cgi-bin/nph-sesame/-oxp/SNV?<isim>`) ya da SIMBAD ile doğrula. Hızlı hareket eden cisimlerde katalog konumu eski tarihli olabilir; öz hareketle bugüne taşımak gerekir.
 
 ## Proje yapısı ve çalışma kuralları
 
