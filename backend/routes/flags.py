@@ -34,7 +34,7 @@ CATEGORIES = [
 ]
 MASKS = [sum(1 << b for b in c["bits"]) for c in CATEGORIES]
 MIN_SHARE = 0.15  # hide problems seen in fewer than 15% of a visit's exposures
-
+MAX_PER_VISIT = 30
 
 
 def _one_exposure(uri, ra, dec, fov, wout, n):
@@ -66,13 +66,24 @@ def flags_overlay(ra, dec, det, fov):
 
     n = sx.grid_size(fov)
     wout = sx.target_wcs(ra, dec, n)
-    rows = sx.find_images(ra, dec, det)
+    rows, unavailable = sx.find_images(ra, dec, det)
+    if unavailable:
+        raise RuntimeError("Some IRSA collections were unavailable for the quality mask")
+    groups = sx.group_visits([(mjd, uri) for uri, mjd in rows])
+    jobs = []
+    for index, group in enumerate(groups):
+        picks = np.linspace(0, len(group) - 1, min(len(group), MAX_PER_VISIT)).round().astype(int)
+        jobs.extend((index, *group[i]) for i in picks)
     with ThreadPoolExecutor(8) as ex:
-        res = list(ex.map(lambda r: _one_exposure(r[0], ra, dec, fov, wout, n), rows))
-    good = [(mjd, a) for (_, mjd), a in zip(rows, res) if a is not None]
+        res = list(ex.map(lambda r: _one_exposure(r[2], ra, dec, fov, wout, n), jobs))
+    good = [[] for _ in groups]
+    for (index, mjd, _), array in zip(jobs, res):
+        if array is not None:
+            good[index].append((mjd, array))
+    n_good = sum(map(len, good))
 
     visits = []
-    for v in sx.group_visits(good):
+    for v in filter(None, good):
         share = np.nanmean(np.stack([a for _, a in v]), axis=0)  # (cat, n, n)
         share = np.nan_to_num(share)
         top = share.argmax(axis=0)
@@ -96,7 +107,7 @@ def flags_overlay(ra, dec, det, fov):
         })
     out = {
         "ra": ra, "dec": dec, "detector": det, "fov_arcsec": fov, "grid": n,
-        "n_exposures": len(good), "n_skipped": len(rows) - len(good),
+        "n_exposures": n_good, "n_skipped": len(jobs) - n_good,
         "categories": [{k: c[k] for k in ("id", "color", "tr", "en")} for c in CATEGORIES],
         "visits": visits,
     }
