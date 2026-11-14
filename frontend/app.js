@@ -2,7 +2,7 @@
 // object for the modules in frontend/modules/ (see ekip/00_ORTAK_BAGLAM.md).
 
 const params = new URLSearchParams(location.search);
-const LANG = params.get("lang") === "en" ? "en" : "tr";
+const LANG = params.get("lang") === "tr" ? "tr" : "en"; // English unless ?lang=tr
 document.documentElement.lang = LANG;
 
 const TEXT = {
@@ -109,7 +109,7 @@ for (const el of document.querySelectorAll("[data-t]")) if (typeof t[el.dataset.
 $("lang").textContent = t.otherLang;
 $("lang").onclick = () => {
   const p = new URLSearchParams(location.search);
-  LANG === "tr" ? p.set("lang", "en") : p.delete("lang");
+  LANG === "en" ? p.set("lang", "tr") : p.delete("lang");
   location.search = p.toString();
 };
 $("det").replaceChildren(...Object.entries(BANDS).map(([d, range]) => {
@@ -228,7 +228,7 @@ function decode(b64) {
 function syncUrl() {
   const p = new URLSearchParams();
   p.set("ra", state.ra); p.set("dec", state.dec); p.set("det", state.det); p.set("fov", state.fov);
-  if (LANG === "en") p.set("lang", "en");
+  if (LANG === "tr") p.set("lang", "tr");
   history.replaceState(null, "", `?${p}`);
 }
 

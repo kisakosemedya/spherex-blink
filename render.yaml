@@ -1,0 +1,13 @@
+# One-click deploy on Render (https://render.com): New > Blueprint > pick this repository.
+# No secrets or environment keys are needed; the site only reads public NASA and ESA data.
+services:
+  - type: web
+    name: spherex-blink
+    runtime: python
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/targets
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
