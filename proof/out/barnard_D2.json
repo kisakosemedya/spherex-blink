@@ -1,0 +1,22 @@
+{
+ "name": "barnard",
+ "ra": 269.4462,
+ "dec": 4.7688,
+ "detector": 2,
+ "fov_arcsec": 150.0,
+ "arcsec_per_pixel": 3.0,
+ "visits": [
+  {
+   "date": "2025-08-26",
+   "n_images": 18
+  },
+  {
+   "date": "2026-03-17",
+   "n_images": 18
+  },
+  {
+   "date": "2026-08-23",
+   "n_images": 23
+  }
+ ]
+}

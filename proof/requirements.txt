@@ -1,0 +1,7 @@
+numpy
+astropy
+reproject
+matplotlib
+fsspec
+aiohttp
+requests
