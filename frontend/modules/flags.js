@@ -10,6 +10,7 @@ const TEXT = {
     loading: "İşaretler okunuyor. İlk seferde bir iki dakika sürebilir…",
     error: "İşaretlere şu an ulaşılamıyor. Sitenin geri kalanı çalışmaya devam ediyor.",
     clean: "Bu karede işaretli bölge yok.",
+    missing: "Bu ziyaretle eşleşen bir kalite maskesi yok.",
     summary: (n, skipped) => `${n} poz incelendi` + (skipped ? `, ${skipped} poz okunamadı` : ""),
     pct: (p) => `alanın %${p}'i`,
   },
@@ -20,6 +21,7 @@ const TEXT = {
     loading: "Reading flags. The first time can take a minute or two…",
     error: "Flags are unreachable right now. The rest of the site keeps working.",
     clean: "No flagged area in this frame.",
+    missing: "No quality mask matches this visit.",
     summary: (n, skipped) => `${n} exposures checked` + (skipped ? `, ${skipped} could not be read` : ""),
     pct: (p) => `${p}% of the field`,
   },
@@ -57,10 +59,15 @@ export function init(app) {
   const key = () => [app.state.ra, app.state.dec, app.state.det, app.state.fov].join("|");
 
   function draw() {
-    const visit = data && data.visits[Math.min(app.state.frameIndex || 0, data.visits.length - 1)];
+    const date = app.state.visits[app.state.frameIndex]?.date;
+    const distance = (v) => Math.abs(Date.parse(v.date) - Date.parse(date)) / 86_400_000;
+    const visit = date && data?.visits.reduce((best, current) => (
+      distance(current) <= 30 && (!best || distance(current) < distance(best)) ? current : best
+    ), null);
     if (!toggle.checked || !visit) {
       image.style.display = "none";
       legend.replaceChildren();
+      if (toggle.checked && data && date) status.textContent = t.missing;
       return;
     }
     // Place the mask by its sky corners so it follows the core's projection.
@@ -89,7 +96,7 @@ export function init(app) {
         return li;
       });
     legend.replaceChildren(...rows);
-    status.textContent = rows.length ? t.summary(data.n_exposures, data.n_skipped) : t.clean;
+    status.textContent = `${visit.date} · ${rows.length ? t.summary(visit.n_images, 0) : t.clean}`;
   }
 
   async function load() {
@@ -115,7 +122,7 @@ export function init(app) {
   }
 
   function refresh() {
-    if (!toggle.checked) return draw();
+    if (!toggle.checked || !app.state.visits.length) return draw();
     if (data && loadedKey === key()) return draw();
     data = null;
     draw();
@@ -123,6 +130,12 @@ export function init(app) {
   }
 
   toggle.addEventListener("change", refresh);
-  app.on("target", () => { data = null; requestId++; status.textContent = ""; refresh(); });
+  app.on("target-loading", () => {
+    requestId++;
+    data = null;
+    status.textContent = "";
+    draw();
+  });
+  app.on("target", refresh);
   app.on("frame", draw);
 }

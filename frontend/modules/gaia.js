@@ -95,6 +95,12 @@ export function init(app) {
   }
 
   toggle.addEventListener("change", draw);
+  app.on("target-loading", () => {
+    requestId++;
+    stars = [];
+    status.textContent = "";
+    draw();
+  });
   app.on("target", load);
   app.on("frame", draw);
   if (app.state.visits && app.state.visits.length) load();

@@ -6,42 +6,84 @@ import csv
 import io
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 
+import aiohttp
 import numpy as np
 from astropy.io import fits
 from astropy.time import Time
 from astropy.wcs import WCS
 
-TAP = "https://irsa.ipac.caltech.edu/TAP/sync"
+SIA = "https://irsa.ipac.caltech.edu/SIA"
+COLLECTIONS = ("spherex_dr1", "spherex_dr1_deep", "spherex_qr3", "spherex_qr3_deep")
+DETECTOR_EDGES_UM = (0.74, 1.10, 1.63, 2.42, 3.83, 4.42, 5.02)
 S3 = "https://nasa-irsa-spherex.s3.amazonaws.com/"
 OUT_SCALE = 3.0        # arcsec per output pixel (native is ~6.15)
 NATIVE_SCALE = 6.15
 VISIT_GAP_DAYS = 60    # a longer gap between exposures starts a new visit
-FSSPEC = {"block_size": 262144, "cache_type": "bytes"}
+FSSPEC = {
+    "block_size": 262144,
+    "cache_type": "bytes",
+    "client_kwargs": {"timeout": aiohttp.ClientTimeout(total=12)},
+}
+
+
+def _search_collection(collection, ra, dec, det):
+    # A wavelength in the middle of a detector cuts the result volume. The
+    # archive detector label is checked again before using the result.
+    wavelength = (DETECTOR_EDGES_UM[det - 1] + DETECTOR_EDGES_UM[det]) / 2e6
+    query = urllib.parse.urlencode({
+        "COLLECTION": collection,
+        "POS": f"circle {ra:.4f} {dec:.4f} 0.0001",
+        "RESPONSEFORMAT": "csv",
+    })
+    for attempt in range(2):
+        url = f"{SIA}?{query}"
+        if attempt == 0:
+            url += f"&BAND={wavelength}"
+        try:
+            with urllib.request.urlopen(url, timeout=10) as response:
+                reader = csv.DictReader(io.StringIO(response.read().decode("utf-8-sig")))
+                if not {"access_url", "obs_id", "energy_bandpassname", "t_min"}.issubset(reader.fieldnames or []):
+                    raise ValueError("unexpected SIA table")
+                return [
+                    (row["obs_id"], row["access_url"], float(row["t_min"]))
+                    for row in reader
+                    if row["energy_bandpassname"] == f"SPHEREx-D{det}"
+                    and row["access_url"] and row["t_min"]
+                ]
+        except (OSError, ValueError) as error:
+            if attempt == 1:
+                raise RuntimeError(f"IRSA {collection} search failed: {error}") from error
 
 
 def find_images(ra, dec, det):
-    """[(uri, mjd)] of every exposure of detector `det` covering the position."""
-    q = (
-        "SELECT a.uri, p.time_bounds_lower FROM spherex.artifact a "
-        "JOIN spherex.plane p ON a.planeid = p.planeid "
-        f"WHERE 1 = CONTAINS(POINT('ICRS', {ra}, {dec}), p.poly) "
-        f"AND p.energy_bandpassname = 'SPHEREx-D{int(det)}' ORDER BY p.time_bounds_lower"
-    )
-    url = TAP + "?" + urllib.parse.urlencode({"FORMAT": "CSV", "QUERY": q})
-    last = None
-    for _ in range(3):
-        try:
-            with urllib.request.urlopen(url, timeout=120) as r:
-                rows = list(csv.DictReader(io.StringIO(r.read().decode())))
-            return [(x["uri"], float(x["time_bounds_lower"])) for x in rows]
-        except Exception as e:
-            last = e
-    raise RuntimeError(f"IRSA image search failed: {type(last).__name__}")
+    """Archive FITS URLs and times, plus any unavailable collections."""
+    unavailable = []
+    with ThreadPoolExecutor(max_workers=len(COLLECTIONS)) as executor:
+        requests = {
+            collection: executor.submit(_search_collection, collection, ra, dec, det)
+            for collection in COLLECTIONS
+        }
+        images = {}
+        for collection, request in requests.items():
+            try:
+                rows = request.result()
+            except RuntimeError:
+                unavailable.append(collection)
+                continue
+            for obs_id, uri, mjd in rows:
+                # DR1 precedes QR3 in overlapping periods, and wide precedes deep
+                # within a release when the same observation is listed twice.
+                images.setdefault(obs_id, (uri, mjd))
+    if not images and unavailable:
+        raise RuntimeError(f"IRSA collections unavailable: {', '.join(unavailable)}")
+    return sorted(images.values(), key=lambda row: row[1]), unavailable
 
 
 def s3_url(uri):
-    return S3 + uri.replace("ibe/data/spherex/", "", 1)
+    path = urllib.parse.urlsplit(uri).path.lstrip("/")
+    return S3 + path.removeprefix("ibe/data/spherex/")
 
 
 def open_remote(uri):

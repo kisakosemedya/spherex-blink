@@ -12,6 +12,7 @@ import re
 import urllib.parse
 import urllib.request
 from pathlib import Path
+from typing import Literal
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -45,9 +46,10 @@ def frames(
     dec: float = Query(..., ge=-90, le=90),
     det: int = Query(2, ge=1, le=6),
     fov: float = Query(150, ge=60, le=600),
+    quality: Literal["preview", "full"] = "full",
 ):
     try:
-        out = build_frames(round(ra, 4), round(dec, 4), det, float(round(fov)))
+        out = build_frames(round(ra, 4), round(dec, 4), det, float(round(fov)), preview=quality == "preview")
     except RuntimeError as e:
         raise HTTPException(503, str(e))
     if not out["visits"]:

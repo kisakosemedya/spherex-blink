@@ -11,6 +11,7 @@ from backend.core import cache
 from backend.core import spherex as sx
 
 MAX_PER_VISIT = 30  # deep fields have hundreds of exposures; a sample is enough
+PREVIEW_PER_VISIT = 6
 
 
 def frames_key(ra, dec, det, fov):
@@ -31,6 +32,8 @@ def _cutout(uri, ra, dec, fov, wout, n):
                 data = np.array(hdu.section[y0:y1, x0:x1], dtype="float32")
                 wcut = w[y0:y1, x0:x1]
             img, _ = reproject_interp((data, wcut), wout, shape_out=(n, n))
+            if not np.isfinite(img).any():
+                return None
             # Removing each exposure's own median takes out the zodiacal light,
             # which otherwise makes whole frames flicker between seasons.
             return (img - np.nanmedian(img)).astype("float32")
@@ -39,23 +42,25 @@ def _cutout(uri, ra, dec, fov, wout, n):
     return None
 
 
-def build_frames(ra, dec, det, fov):
-    key = frames_key(ra, dec, det, fov)
-    hit = cache.load(key)
+def build_frames(ra, dec, det, fov, preview=False):
+    full_key = frames_key(ra, dec, det, fov)
+    key = f"{full_key}_preview" if preview else full_key
+    hit = cache.load(full_key) or (cache.load(key) if preview else None)
     if hit:
         return hit
     with cache.lock(key):
-        hit = cache.load(key)
+        hit = cache.load(full_key) or (cache.load(key) if preview else None)
         if hit:
             return hit
         n = sx.grid_size(fov)
         wout = sx.target_wcs(ra, dec, n)
-        rows = sx.find_images(ra, dec, det)
+        rows, unavailable = sx.find_images(ra, dec, det)
         groups = sx.group_visits([(mjd, uri) for uri, mjd in rows])
+        limit = PREVIEW_PER_VISIT if preview else MAX_PER_VISIT
         jobs = []
         for vi, g in enumerate(groups):
-            if len(g) > MAX_PER_VISIT:
-                pick = np.linspace(0, len(g) - 1, MAX_PER_VISIT).round().astype(int)
+            if len(g) > limit:
+                pick = np.linspace(0, len(g) - 1, limit).round().astype(int)
                 g = [g[i] for i in pick]
             jobs += [(vi, mjd, uri) for mjd, uri in g]
         with ThreadPoolExecutor(8) as ex:
@@ -73,17 +78,25 @@ def build_frames(ra, dec, det, fov):
             mjds = [m for m, _ in got]
             visits.append({
                 "date": sx.visit_date(mjds),
+                "date_start": sx.visit_date([min(mjds)]),
+                "date_end": sx.visit_date([max(mjds)]),
                 "mjd": round(float(np.mean(mjds)), 3),
                 "n_images": len(got),
                 "n_available": len(groups[vi]),
+                "releases": sorted({sx.s3_url(j[2]).split("/")[3].upper()
+                                    for j, im in zip(jobs, imgs) if j[0] == vi and im is not None}),
                 # float32 little-endian, row 0 = south, NaN = no usable data
                 "data": base64.b64encode(stack.astype("<f4").tobytes()).decode(),
             })
         out = {
             "ra": ra, "dec": dec, "detector": det, "fov_arcsec": fov, "grid": n,
             "arcsec_per_pixel": sx.OUT_SCALE, "n_found": len(rows),
+            "quality": "preview" if preview and any(len(g) > limit for g in groups) else "full",
+            "unavailable_collections": unavailable,
             "n_skipped": skipped, "visits": visits,
         }
-        if visits:
+        if rows and not visits:
+            raise RuntimeError("IRSA listed exposures but no usable FITS cutouts could be read")
+        if visits and not unavailable:
             cache.save(key, out)
         return out

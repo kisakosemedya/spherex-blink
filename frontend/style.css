@@ -50,8 +50,20 @@ main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340px); ga
 .legend { color: var(--dim); font-size: .9rem; }
 .legend b.new { color: var(--warm); } .legend b.old { color: #5aa2ff; }
 .settings { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px 16px; margin-top: 14px; }
+#compare[hidden], #archive-status:empty, #frame-data:empty { display: none; }
 .settings label { display: grid; gap: 4px; font-size: .9rem; color: var(--dim); }
 .settings select { padding: 6px 8px; background: var(--card); border: 1px solid var(--line); border-radius: 6px; color: var(--text); }
 .panel { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 12px; }
 .meta { color: var(--dim); font-size: .88rem; overflow-wrap: anywhere; }
+.panel a { color: var(--accent); }
+.sky-map-wrap { position: relative; }
+.sky-map-wrap::after {
+  position: absolute; left: 50%; top: 50%; width: 18px; height: 18px;
+  border: 1px solid var(--accent); border-radius: 50%;
+  transform: translate(-50%, -50%); pointer-events: none; content: "";
+}
+#sky-map { height: 260px; border-radius: 6px; overflow: hidden; }
+.comparison { display: block; width: 100%; border-radius: 4px; }
+.lightcurve { width: 100%; }
+.lightcurve-values { padding-left: 1.2em; font-size: .88rem; }
 footer { margin-top: 28px; color: var(--dim); font-size: .82rem; border-top: 1px solid var(--line); padding-top: 12px; }
