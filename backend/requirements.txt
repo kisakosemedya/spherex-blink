@@ -1,8 +1,8 @@
-fastapi
-uvicorn
-numpy
-astropy
-reproject
-fsspec
-aiohttp
-pillow
+fastapi==0.128.8
+uvicorn==0.39.0
+numpy==1.26.4
+astropy==6.0.1
+reproject==0.13.0
+fsspec==2025.10.0
+aiohttp==3.13.5
+pillow==11.3.0
