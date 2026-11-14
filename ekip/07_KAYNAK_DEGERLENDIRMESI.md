@@ -4,7 +4,7 @@ Ekibin topladığı yerel kaynak klasörü (`NASA_SpaceApps_PlanetX_SPHEREx`) 14
 
 ## Repoyla çelişen noktalar
 
-- **WISE 0855 koordinatı:** Klasör görev metnindeki konumu (133.7951, −7.2451) ve 0,05° kesitleri kullanıyor. Repo bugünkü konumu ~133.768 olarak veriyor (~96″ fark). Klasördeki WISE 0855 Gaia dosyası ve planlanan kesitler bu yüzden cismi ıskalayabilir. Doğrulanmadı; SIMBAD ile kontrol edilmeli.
+- **WISE 0855 koordinatı:** Klasör görev metnindeki konumu (133.7951, −7.2451) ve 0,05° kesitleri kullanıyor. Repo, veriyle doğrulanmış merkez olarak 133.7598, −7.2422 kullanıyor (`data/presets/`). Klasördeki WISE 0855 Gaia dosyası ve kesit planı eski merkeze göre; kullanmayın.
 - **Veri erişimi:** Klasördeki indirme betiği ve `ARCHITECTURE_RECOMMENDATION.md`, IRSA kesit servisini (`...fits?center=&size=`) kullanıyor; bu servis 503 veriyor. Repo AWS + HTTP Range yolunu kullanıyor ve bu yol çalışıyor.
 - **Mimari:** Klasördeki öneride Zarr, iş kuyruğu gibi parçalar var; bir günlük iş için fazla.
 

@@ -2,6 +2,21 @@
 
 Bu bir **öneridir**; ekipçe tartışılıp kesinleşecek. Saatler başlangıçtan itibaren yazıldı (S+0, S+4 …) ve yaklaşık 20 saat kaldığı varsayıldı. Gerçek teslim saatine göre kaydırın.
 
+## Durum güncellemesi (commit `1cd3061` sonrası)
+
+Plan yazıldıktan sonra `main`'e çalışan site geldi. Aşağıdaki kişi kişi plan bu yüzden kısmen geride kaldı; güncel öncelik şu:
+
+**Bitmiş görünenler:** blink oynatıcı, fark görüntüsü, dedektör ve görüş alanı seçimi, paylaşılabilir adres, TR/EN metin, beş hedefin önceden indirilmiş verisi (`data/presets/`), Gaia DR3 katmanı (öz hareketli), kirlenme bayrakları katmanı. WISE 0855 merkezi düzeltilmiş (133.7598, −7.2422).
+
+**Kalan işler, öncelik sırasıyla:**
+1. **Yayına alma (K1, en kritik).** Site henüz yalnızca yerelde çalışıyor. Python arka ucu için ör. Hugging Face Spaces (Docker) ya da Render. Yayına alınamazsa yedek: `data/presets/` dosyalarını okuyan statik bir sürüm (GitHub Pages).
+2. **Işık eğrisi (K2).** RW Aur ve R Dra zorunlu hedefler ve hareket etmiyorlar; parlaklık değişimini göstermek için gerekli.
+3. **Poz modu (K2).** Ziyaret içindeki pozları tek tek oynatmak; "küçük video" isteğini üç kareden çok daha iyi karşılar.
+4. **Sahte renk (K2)** ve **anlık spektrum (K3, "ekstra övgü")**.
+5. **Sunum malzemeleri.** Video, özet, kullanıcı testi; Kişi 5 baştan paralel.
+
+Gaia ve bayraklar bittiği için Kişi 4 yayına alma ya da poz moduna kaydırılabilir.
+
 ## Temel kural: üç kademe
 
 | Kademe | İçerik | Bitmesi gereken saat |
