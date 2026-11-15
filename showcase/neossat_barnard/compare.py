@@ -95,13 +95,13 @@ for name, t, mr, md, gr, gd, s in rows:
     for (nm, tt, r_, d_, *_ ) in rows:
         x, y = w.world_to_pixel(SkyCoord(r_*u.deg, d_*u.deg))
         ax.plot(x, y, "o", ms=14, mfc="none", mec="#f5c518" if tt == t else "#4aa3ff", mew=1.2, alpha=1 if tt == t else 0.5)
-    ax.set_title(f"{t.iso[:10]}\n{name}", fontsize=11)
+    ax.set_title(f"{t.iso[:10]}\n{name}", fontsize=11, color="white")
     ax.set_xticks([]); ax.set_yticks([])
     ax.text(0.02, 0.02, "north up · 330″ field · Barnard's Star", color="w", fontsize=8, transform=ax.transAxes)
     fig.tight_layout()
     buf = io.BytesIO(); fig.savefig(buf, dpi=90, facecolor="black"); plt.close(fig)
-    pngs.append(Image.open(buf).convert("P", palette=Image.ADAPTIVE))
-pngs[0].save(out + "/barnard_neossat_spherex.gif", save_all=True, append_images=pngs[1:], duration=900, loop=0)
+    pngs.append(Image.open(buf).convert("RGB"))
+pngs[0].save(out + "/barnard_neossat_spherex.gif", save_all=True, append_images=pngs[1:], duration=900, loop=0, disposal=2, optimize=False)
 
 fig, ax = plt.subplots(1, len(rows), figsize=(4.2 * len(rows), 4.6))
 for a, (name, t, mr, md, gr, gd, s) in zip(ax, rows):

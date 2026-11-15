@@ -71,17 +71,17 @@ function draw(canvas, dates, relative) {
   const x = (i) => left + (right - left) * (span > 0 ? (times[i] - times[0]) / span : i / (times.length - 1));
   const y = (v) => bottom - (v - min) / (max - min) * (bottom - top);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.font = "14px system-ui";
+  ctx.font = '13px "IBM Plex Mono", monospace';
   for (const tick of [min, 100, ...(max > 110 ? [max] : [])]) {
-    ctx.fillStyle = "#9aa5b5";
+    ctx.fillStyle = "#a3a3a3";
     ctx.fillText(`${Math.round(tick)}%`, 1, y(tick) + 5);
-    ctx.strokeStyle = "#2a3140";
+    ctx.strokeStyle = "#262626";
     ctx.beginPath();
     ctx.moveTo(left, y(tick));
     ctx.lineTo(right, y(tick));
     ctx.stroke();
   }
-  ctx.strokeStyle = "#4cc9f0";
+  ctx.strokeStyle = "#ffffff";
   ctx.lineWidth = 2;
   ctx.beginPath();
   relative.forEach((v, i) => i ? ctx.lineTo(x(i), y(v)) : ctx.moveTo(x(i), y(v)));
@@ -89,7 +89,7 @@ function draw(canvas, dates, relative) {
   for (const [i, v] of relative.entries()) {
     ctx.beginPath();
     ctx.arc(x(i), y(v), 4, 0, 2 * Math.PI);
-    ctx.fillStyle = "#4cc9f0";
+    ctx.fillStyle = "#ffffff";
     ctx.fill();
   }
 }

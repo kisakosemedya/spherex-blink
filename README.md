@@ -1,7 +1,15 @@
-# SPHEREx Blink
+# Sky Revisit (SPHEREx Blink)
 
 A public web tool that plays NASA SPHEREx images of any patch of sky as a short
 blink sequence, so anyone can spot objects that move or change brightness.
+
+The site is English first, with Turkish as a second language (`?lang=tr`). Pages:
+home (`/`), sky map (`?view=map`), targets (`?view=targets`), one page per target
+(`?view=target&id=barnard`), the observation workspace (`?view=observations&ra=…&dec=…`),
+how it works (`?view=guide`) and data & credits (`?view=credits`). Add `&embed=1`
+to an observations link for a player-only view. The visual design follows
+`SKY_REVISIT_ASTERON_UYARLAMA.md` (black stage, Orbitron/Oxanium display type,
+Instrument Sans body, IBM Plex Mono data).
 
 Built for the NASA Space Apps Challenge 2026, challenge
 [Planet X and SPHEREx](https://www.spaceappschallenge.org/2026/challenges/planet-x-and-spherex/).

@@ -25,7 +25,13 @@ from backend.core.targets import TARGETS, find_preset
 
 ROOT = Path(__file__).resolve().parent.parent
 FRONTEND = ROOT / "frontend"
-SESAME = "https://cds.unistra.fr/cgi-bin/nph-sesame/-oI/SNV?"
+# CDS Sesame and its mirrors. In November 2026 the main CDS host answered in
+# ~30 s while the Harvard mirror answered in under a second, so the mirror is
+# tried first with a short timeout and CDS stays as the fallback.
+SESAME = [
+    ("https://vizier.cfa.harvard.edu/viz-bin/nph-sesame/-oI/SNV?", 6),
+    ("https://cds.unistra.fr/cgi-bin/nph-sesame/-oI/SNV?", 12),
+]
 
 app = FastAPI(title="SPHEREx Blink")
 
@@ -82,18 +88,21 @@ def resolve(q: str = Query(..., min_length=1, max_length=80)):
     coords = _parse_coordinates(q)
     if coords:
         return {"source": "coordinates", "ra": round(coords[0], 5), "dec": round(coords[1], 5)}
-    try:
-        with urllib.request.urlopen(SESAME + urllib.parse.quote(q), timeout=8) as r:
-            text = r.read().decode(errors="replace")
+    answered = False
+    for base, timeout in SESAME:
+        try:
+            with urllib.request.urlopen(base + urllib.parse.quote(q), timeout=timeout) as r:
+                text = r.read().decode(errors="replace")
+        except Exception:
+            continue  # try the next mirror
+        answered = True
         m = re.search(r"^%J\s+([-+\d.]+)\s+([-+\d.]+)", text, re.M)
         if m:
             return {"source": "sesame", "name": q, "ra": round(float(m.group(1)), 5),
                     "dec": round(float(m.group(2)), 5)}
+    if answered:
         raise HTTPException(404, "name not found")
-    except HTTPException:
-        raise
-    except Exception:
-        raise HTTPException(503, "name service unreachable")
+    raise HTTPException(503, "name service unreachable")
 
 
 for info in pkgutil.iter_modules(routes_pkg.__path__):

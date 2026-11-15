@@ -61,7 +61,7 @@ export function init(app) {
       c.setAttribute("cy", y);
       c.setAttribute("r", fast ? 14 : 9);
       c.setAttribute("fill", "none");
-      c.setAttribute("stroke", fast ? "#ffd23f" : "#4cc9f0");
+      c.setAttribute("stroke", fast ? "#f2ae59" : "#ffffff");
       c.setAttribute("stroke-width", fast ? 2 : 1.25);
       c.style.pointerEvents = "stroke";
       const tip = document.createElementNS(SVG_NS, "title");

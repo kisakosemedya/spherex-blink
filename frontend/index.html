@@ -3,97 +3,126 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SPHEREx Blink</title>
+<title>Sky Revisit · Explore the infrared sky with NASA SPHEREx</title>
+<meta name="description" content="Compare real NASA SPHEREx observations of any patch of sky across dates and see what moved or changed brightness. NASA Space Apps Challenge 2026.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500&family=Orbitron:wght@400;500&family=Oxanium:wght@400;500&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="top">
-  <div>
-    <h1>SPHEREx Blink</h1>
-    <p class="tagline" data-t="tagline"></p>
+<a class="sr" href="#main">Skip to content</a>
+
+<header class="nav" id="nav">
+  <a class="brand" href="/" data-link="home"><img src="assets/logo.png" alt="Sky Revisit" width="58" height="40"></a>
+  <nav aria-label="Main">
+    <ul class="menu" id="menu">
+      <li><a href="?view=map" data-link="map" data-t="nav.map"></a></li>
+      <li><a href="?view=targets" data-link="targets" data-t="nav.targets"></a></li>
+      <li><a href="?view=guide" data-link="guide" data-t="nav.guide"></a></li>
+      <li><a href="?view=credits" data-link="credits" data-t="nav.credits"></a></li>
+      <li class="lang-mobile" id="lang-mobile"></li>
+    </ul>
+  </nav>
+  <div class="nav-tools">
+    <div class="lang" id="lang"></div>
+    <form class="search" id="search" role="search" autocomplete="off">
+      <label class="sr" for="q" data-t="search"></label>
+      <input id="q" type="search" data-t-ph="search" spellcheck="false" aria-describedby="q-hint" aria-autocomplete="list" aria-controls="suggest">
+      <span class="sr" id="q-hint" data-t="searchHint"></span>
+      <ul class="suggest" id="suggest" role="listbox" hidden></ul>
+    </form>
+    <button class="btn btn--sm nav-open" id="tour-btn" type="button" data-t="tour"></button>
+    <a class="btn btn--primary btn--sm nav-open" href="?view=observations" data-link="observations" data-t="open"></a>
+    <button class="icon-btn menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="menu">
+      <span class="sr" data-t="menu"></span>
+      <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
   </div>
-  <a class="lang" id="lang"></a>
 </header>
 
-<section class="intro" id="intro">
-  <ol>
-    <li data-t="step1"></li>
-    <li data-t="step2"></li>
-    <li data-t="step3"></li>
-  </ol>
-</section>
-
-<form class="search" id="search">
-  <label for="q" data-t="searchLabel"></label>
-  <div class="row">
-    <input id="q" autocomplete="off" spellcheck="false">
-    <button type="submit" data-t="searchButton"></button>
-  </div>
-  <p class="hint" data-t="searchHint"></p>
-</form>
-
-<nav class="presets" id="presets" aria-label="test targets"></nav>
-
-<main>
-  <section class="viewer">
-    <div class="stage" id="stage" tabindex="0" data-t-label="stageLabel">
-      <canvas id="canvas" width="50" height="50"></canvas>
-      <svg id="overlay" viewBox="0 0 1000 1000" preserveAspectRatio="none">
-        <g id="compass"></g>
-      </svg>
-      <div class="veil" id="veil" hidden>
-        <div><p id="veilText" role="status"></p><button id="retry" type="button" data-t="retry" hidden></button></div>
-      </div>
-    </div>
-
-    <div class="frames" id="frames"></div>
-    <p class="meta" id="frame-data"></p>
-    <p class="meta" id="archive-status" role="status"></p>
-    <button id="refine" type="button" data-t="refine" hidden></button>
-
-    <div class="controls">
-      <button id="prev" type="button" data-t-label="previous" disabled>◀</button>
-      <button id="play" type="button" disabled></button>
-      <button id="next" type="button" data-t-label="next" disabled>▶</button>
-      <button id="diff" type="button" disabled aria-pressed="false" data-t="diffButton"></button>
-      <button id="combine" type="button" disabled aria-pressed="false" data-t="combineButton"></button>
-    </div>
-    <div class="settings" id="compare" hidden>
-      <label><span data-t="dateA"></span><select id="dateA"></select></label>
-      <label><span data-t="dateB"></span><select id="dateB"></select></label>
-    </div>
-    <p class="legend" id="diffLegend" hidden data-t="diffLegend"></p>
-
-    <div class="settings">
-      <label><span data-t="speed"></span>
-        <input id="speed" type="range" min="150" max="1500" step="50" value="700"></label>
-      <label><span data-t="brightness"></span>
-        <input id="stretch" type="range" min="-10" max="20" step="1" value="0"></label>
-      <label><span data-t="band"></span>
-        <select id="det"></select></label>
-      <label><span data-t="fov"></span>
-        <select id="fov">
-          <option value="90">90″</option><option value="150" selected>150″</option>
-          <option value="200">200″</option><option value="300">300″</option><option value="600">600″</option>
-        </select></label>
-    </div>
-  </section>
-
-  <aside class="side">
-    <div id="map-panel"></div>
-    <section class="panel" id="about">
-      <h2 id="targetName"></h2>
-      <p id="targetBlurb"></p>
-      <p class="meta" id="targetMeta"></p>
-      <button id="share" type="button" data-t="share"></button>
-    </section>
-    <div id="panels"></div>
-  </aside>
+<main id="main">
+  <div class="view" id="view-home"></div>
+  <div class="view" id="view-map"></div>
+  <div class="view" id="view-targets"></div>
+  <div class="view" id="view-target"></div>
+  <div class="view" id="view-observations"></div>
+  <div class="view" id="view-guide"></div>
+  <div class="view" id="view-credits"></div>
 </main>
 
-<footer>
-  <p data-t="credit"></p>
-</footer>
+<!-- One observation workspace, moved between the Observations page and the target pages. -->
+<div id="ws-home" hidden>
+  <section class="ws" id="ws" aria-label="Observation workspace">
+    <div class="ws-main">
+      <div class="ws-head">
+        <h1 id="ws-name"></h1>
+        <span class="mono" id="ws-meta"></span>
+      </div>
+      <div class="stage-box">
+        <div class="stage crop" id="stage" tabindex="0">
+          <i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+          <canvas id="canvas" width="50" height="50"></canvas>
+          <svg class="overlay" id="overlay" viewBox="0 0 1000 1000" preserveAspectRatio="none"><g id="compass"></g></svg>
+          <span class="stage-date" id="stage-date"></span>
+          <div class="veil" id="veil" hidden>
+            <div>
+              <div class="spinner" id="spinner"></div>
+              <p id="veil-text" role="status"></p>
+              <button class="btn btn--sm" id="retry" type="button" data-t="retry" hidden></button>
+              <p class="fact" id="veil-fact"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ws-controls">
+        <div class="row">
+          <button class="icon-btn" id="prev" type="button" disabled><span class="sr" data-t="prev"></span><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <button class="btn btn--sm btn--primary" id="play" type="button" disabled></button>
+          <button class="icon-btn" id="next" type="button" disabled><span class="sr" data-t="next"></span><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+          <span style="width:.5rem"></span>
+          <button class="btn btn--sm btn--plain" id="m-blink" type="button" data-t="blink" aria-pressed="true"></button>
+          <button class="btn btn--sm btn--plain" id="m-compare" type="button" data-t="compare" aria-pressed="false"></button>
+          <button class="btn btn--sm btn--plain" id="m-diff" type="button" data-t="difference" aria-pressed="false"></button>
+          <button class="btn btn--sm btn--plain" id="adv-toggle" type="button" data-t="advanced" aria-expanded="false" aria-controls="adv" style="margin-left:auto"></button>
+        </div>
+        <div class="timeline-strip" id="frames"></div>
+        <div class="row" id="compare-row" hidden>
+          <label class="small muted"><span data-t="dateA"></span> <select id="dateA"></select></label>
+          <label class="small muted"><span data-t="dateB"></span> <select id="dateB"></select></label>
+        </div>
+        <p class="legend" id="legend" hidden></p>
+        <p class="status" id="archive-status" role="status"></p>
+        <button class="btn btn--sm" id="refine" type="button" data-t="refine" hidden></button>
+        <div class="adv" id="adv" hidden>
+          <label><span data-t="detector"></span><select id="det"></select></label>
+          <label><span data-t="fov"></span>
+            <select id="fov"><option value="90">90″</option><option value="150">150″</option><option value="200">200″</option><option value="300">300″</option><option value="600">600″</option></select></label>
+          <label><span data-t="speed"></span><input id="speed" type="range" min="150" max="1500" step="50" value="700"></label>
+          <label><span data-t="brightness"></span><input id="stretch" type="range" min="-10" max="20" step="1" value="0"></label>
+        </div>
+      </div>
+    </div>
+    <aside class="ws-side">
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" id="tab-target" aria-selected="true" aria-controls="pane-target" data-t="tabs.target"></button>
+        <button type="button" role="tab" id="tab-layers" aria-selected="false" aria-controls="pane-layers" data-t="tabs.layers"></button>
+        <button type="button" role="tab" id="tab-measure" aria-selected="false" aria-controls="pane-measure" data-t="tabs.measure"></button>
+        <button type="button" role="tab" id="tab-share" aria-selected="false" aria-controls="pane-share" data-t="tabs.share"></button>
+      </div>
+      <div class="tab-body" role="tabpanel" id="pane-target"></div>
+      <div class="tab-body" role="tabpanel" id="pane-layers" hidden></div>
+      <div class="tab-body" role="tabpanel" id="pane-measure" hidden><p class="muted" data-t="measureHelp"></p></div>
+      <div class="tab-body share-box" role="tabpanel" id="pane-share" hidden></div>
+    </aside>
+  </section>
+</div>
+
+<footer id="footer"></footer>
+<div class="tour" id="tour" hidden role="dialog" aria-live="polite"></div>
+
 <script type="module" src="app.js"></script>
 </body>
 </html>
