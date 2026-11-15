@@ -215,8 +215,29 @@ const HIDE = {
   showSimbadPointerControl: false, showCooGridControl: false, showSettingsControl: false, showShareControl: false,
   showContextMenu: false, showStatusBar: false, log: false,
 };
-function setWavelength(aladin, micron) {
-  try { aladin.getBaseImageLayer()?.setFrequency({ value: 299792458 / (micron * 1e-6), unit: "Hz" }); } catch {}
+// Wavelength (µm) of each of the 102 frames of the SPHEREx DR1 HiPS cube
+// (data_cube_crval3_arr in its properties file). Frames 50 and 51 are blank.
+const CUBE_UM = [0.753,0.771,0.790,0.809,0.828,0.848,0.868,0.889,0.910,0.932,0.955,0.978,1.001,1.025,1.050,1.075,1.102,1.113,1.139,1.167,1.195,1.224,1.254,1.284,1.315,1.346,1.378,1.412,1.446,1.481,1.517,1.554,1.592,1.631,1.656,1.695,1.735,1.775,1.818,1.861,1.905,1.949,1.995,2.041,2.089,2.139,2.189,2.240,2.292,2.345,2.399,2.445,2.506,2.575,2.646,2.719,2.794,2.871,2.951,3.033,3.118,3.204,3.293,3.383,3.476,3.570,3.667,3.768,3.833,3.867,3.901,3.935,3.970,4.005,4.040,4.076,4.112,4.148,4.184,4.220,4.257,4.294,4.331,4.368,4.405,4.435,4.467,4.500,4.533,4.566,4.600,4.635,4.669,4.704,4.739,4.773,4.808,4.843,4.879,4.915,4.951,4.988];
+function cubeFrame(micron) {
+  let best = 0;
+  CUBE_UM.forEach((w, i) => { if (i !== 50 && i !== 51 && Math.abs(w - micron) < Math.abs(CUBE_UM[best] - micron)) best = i; });
+  return best;
+}
+// Aladin turns a frequency into a frame number by spacing the frames evenly in
+// frequency, but this cube's frames are uneven steps in wavelength. So pick the
+// frame for the wavelength first, then hand Aladin the frequency it maps to that frame.
+function setWavelength(aladin, micron, tries = 20) {
+  try {
+    const layer = aladin.getBaseImageLayer();
+    if (!layer?.cubeDepth || !layer.emMin || !layer.emMax) {
+      // the cube's properties file may still be loading
+      if (tries > 0 && layer?.url?.includes("spherex")) setTimeout(() => setWavelength(aladin, micron, tries - 1), 300);
+      return;
+    }
+    const fLo = 299792458 / layer.emMax, fHi = 299792458 / layer.emMin;
+    const frame = cubeFrame(micron);
+    layer.setFrequency({ value: fLo + ((frame + 0.25) / layer.cubeDepth) * (fHi - fLo), unit: "Hz" });
+  } catch {}
 }
 async function makeMap(host, { ra, dec, fov, projection = "SIN", micron = 1.53 }) {
   const A = await loadAladin();
@@ -729,7 +750,9 @@ function renderCredits(el) {
 // ---------------------------------------------------------------------------
 // sky map page
 // ---------------------------------------------------------------------------
-const SURVEYS = [["SPHEREx", SPHEREX_HIPS], ["2MASS", "CDS/P/2MASS/color"], ["AllWISE", "CDS/P/allWISE/color"], ["DSS2", "CDS/P/DSS2/color"]];
+// IRSA mirrors of the comparison surveys (same host as the SPHEREx map, so they load alike)
+const SURVEYS = [["SPHEREx", SPHEREX_HIPS], ["2MASS", "https://irsa.ipac.caltech.edu/data/hips/CDS/2MASS/Color"],
+  ["AllWISE", "https://irsa.ipac.caltech.edu/data/hips/CDS/AllWISE/RGB-W4-W2-W1"], ["DSS2", "https://irsa.ipac.caltech.edu/data/hips/CDS/DSS2/color"]];
 function renderMap(el) {
   el.innerHTML = `
   <section class="mapview">
@@ -781,6 +804,8 @@ function renderMap(el) {
     el.querySelectorAll("#surveys [data-s]").forEach((b) => (b.onclick = () => {
       el.querySelectorAll("#surveys [data-s]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
       const url = SURVEYS[b.dataset.s][1];
+      // the wavelength controls only apply to the SPHEREx cube
+      el.querySelectorAll("#wl-range, [data-wl]").forEach((x) => (x.disabled = b.dataset.s !== "0"));
       if (b.dataset.s === "0") el.querySelector("#sky-map").addEventListener("AL:Layer.added", () => setWavelength(aladin, Number(el.querySelector("#wl-range").value)), { once: true });
       aladin.setImageSurvey(url);
     }));

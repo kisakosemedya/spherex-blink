@@ -670,3 +670,5 @@ body.embed #view-observations .ws { margin-top: 0; height: 100svh; }
 
 /* the fade-in belongs to the home hero only; the Sky map page shows its map at once */
 .mapview .hero-map { opacity: 1; }
+/* keep "µm" as written: upper-casing turns µ into a Greek capital M */
+#wl { text-transform: none; }
