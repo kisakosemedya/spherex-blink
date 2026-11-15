@@ -110,4 +110,14 @@ for info in pkgutil.iter_modules(routes_pkg.__path__):
     if getattr(module, "router", None) is not None:
         app.include_router(module.router)
 
+@app.middleware("http")
+async def revalidate_site_files(request, call_next):
+    """Browsers must check the page, scripts and styles on every visit (a cheap 304
+    when unchanged), so a new release never mixes with cached old files."""
+    response = await call_next(request)
+    if not request.url.path.startswith("/api/") and "cache-control" not in response.headers:
+        response.headers["Cache-Control"] = "no-cache"
+    return response
+
+
 app.mount("/", StaticFiles(directory=FRONTEND, html=True), name="frontend")

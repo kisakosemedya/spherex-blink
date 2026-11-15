@@ -667,3 +667,6 @@ body.embed #view-observations .ws { margin-top: 0; height: 100svh; }
   .hero-quick a { font-size: .6875rem; gap: .5rem; }
   .hero-quick .icon-btn { width: 32px; height: 32px; }
 }
+
+/* the fade-in belongs to the home hero only; the Sky map page shows its map at once */
+.mapview .hero-map { opacity: 1; }

@@ -768,6 +768,7 @@ function renderMap(el) {
   el.querySelector("#field-open").onclick = open;
   setField(269.4462, 4.7688);
   makeMap(el.querySelector("#sky-map"), { ra: 269.4462, dec: 4.7688, fov: 24, micron: 1.53 }).then(({ aladin }) => {
+    el.querySelector("#sky-map").classList.add("ready");
     mapState.aladin = aladin;
     aladin.on("positionChanged", (pos) => { const [ra, dec] = aladin.getRaDec(); setField(ra, dec); });
     aladin.on("objectClicked", (o) => { const id = o?.data?.id; if (id) navigate("target", { id }); });
