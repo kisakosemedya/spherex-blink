@@ -11,7 +11,6 @@ import re
 import warnings
 from concurrent.futures import ThreadPoolExecutor
 
-import hpgeom
 import numpy as np
 import requests
 from astropy.io import fits
@@ -62,6 +61,7 @@ def spectrum(ra: float = Query(..., ge=0, lt=360), dec: float = Query(..., ge=-9
         hit = cache.load(key)
         if hit:
             return hit
+        import hpgeom  # here, so a missing package only disables this route
         ipix = int(hpgeom.angle_to_pixel(32, ra, dec, nest=True, lonlat=True))
         url = CUBE.format(d=(ipix // 10000) * 10000, p=ipix)
         try:
