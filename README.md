@@ -15,6 +15,10 @@ Built for the NASA Space Apps Challenge 2026, challenge
 
 The five challenge targets are bundled. New sky positions load from the IRSA archive.
 
+**Live site:** https://skyrevisit.sothmac.com · **Presentation:** [docs/SkyRevisit_Global_Presentation.pdf](docs/SkyRevisit_Global_Presentation.pdf)
+
+Team Sothmac: Muhammed Emirhan Bukan, Tuğçe Meydan, Ahmet Hant, Kerem Can, Ömer Kurt.
+
 ## What it does
 
 - Type an object name or coordinates, or select an area on the Aladin Lite sky map. The map shows the SPHEREx DR1 all-sky mosaic, and the player shows dated spectral observations.
