@@ -7,15 +7,13 @@ The site is English first, with Turkish as a second language (`?lang=tr`). Pages
 home (`/`), sky map (`?view=map`), targets (`?view=targets`), one page per target
 (`?view=target&id=barnard`), the observation workspace (`?view=observations&ra=…&dec=…`),
 how it works (`?view=guide`) and data & credits (`?view=credits`). Add `&embed=1`
-to an observations link for a player-only view. The visual design follows
-`SKY_REVISIT_ASTERON_UYARLAMA.md` (black stage, Orbitron/Oxanium display type,
-Instrument Sans body, IBM Plex Mono data).
+to an observations link for a player-only view. The interface uses a black stage
+with Orbitron/Oxanium display type, Instrument Sans body text and IBM Plex Mono data.
 
 Built for the NASA Space Apps Challenge 2026, challenge
 [Planet X and SPHEREx](https://www.spaceappschallenge.org/2026/challenges/planet-x-and-spherex/).
 
 The five challenge targets are bundled. New sky positions load from the IRSA archive.
-The [test deployment](https://13-53-48-37.sslip.io/) may run an earlier revision.
 
 ## What it does
 

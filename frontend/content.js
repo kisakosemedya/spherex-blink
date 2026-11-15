@@ -165,7 +165,7 @@ export const T = {
       ["Predicted", "Circles and the Gaia figure come from ESA Gaia DR3 positions moved to each date with their proper motion."],
       ["Not measured", "Values marked “not measured yet” are left empty on purpose instead of being estimated."]],
     sources: "Sources",
-    aiNote: "AI use: code and text were written with AI coding assistants (Claude) and checked by the team by running them on real data.",
+    aiNote: "AI use: code and text were written with AI coding assistants and checked by the team by running them on real data.",
     ack: "This project makes use of data products from the Spectro-Photometer for the History of the Universe, Epoch of Reionization and Ices Explorer (SPHEREx), which is a joint project of the Jet Propulsion Laboratory and the California Institute of Technology, and is funded by the National Aeronautics and Space Administration.",
 
     tourSteps: [
@@ -332,7 +332,7 @@ export const T = {
       ["Öngörülen", "Daireler ve Gaia değeri, ESA Gaia DR3 konumlarının öz hareketle her tarihe taşınmasından gelir."],
       ["Ölçülmedi", "“Henüz ölçülmedi” yazan değerler tahmin edilmek yerine bilerek boş bırakıldı."]],
     sources: "Kaynaklar",
-    aiNote: "Yapay zekâ kullanımı: kod ve metinler yapay zekâ kodlama asistanlarıyla (Claude) yazıldı ve ekip tarafından gerçek veriyle çalıştırılarak kontrol edildi.",
+    aiNote: "Yapay zekâ kullanımı: kod ve metinler yapay zekâ kodlama asistanlarıyla yazıldı ve ekip tarafından gerçek veriyle çalıştırılarak kontrol edildi.",
     ack: "This project makes use of data products from the Spectro-Photometer for the History of the Universe, Epoch of Reionization and Ices Explorer (SPHEREx), which is a joint project of the Jet Propulsion Laboratory and the California Institute of Technology, and is funded by the National Aeronautics and Space Administration.",
 
     tourSteps: [

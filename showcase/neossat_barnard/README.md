@@ -69,5 +69,5 @@ python showcase/neossat_barnard/compare.py showcase/neossat_barnard/out/neossat_
   Processing and Analysis Consortium (DPAC).
 - Software: Astropy, reproject, NumPy, SciPy, Matplotlib, Pillow, Requests.
 - AI use: the scripts and this README were written with an AI coding assistant
-  (Claude) and checked by running them end to end; the numbers above come from
+  and checked by running them end to end; the numbers above come from
   those runs.
