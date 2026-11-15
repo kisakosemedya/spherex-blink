@@ -4,6 +4,11 @@
 # Updating later: push to the branch, then reboot the instance (the service pulls on start).
 set -eux
 APP=/opt/spherex-blink
+# Optional: your own address, e.g. DOMAIN=skyrevisit.example.com. Point its DNS A record
+# at this instance's Elastic IP first; Caddy then fetches the HTTPS certificate by itself.
+DOMAIN="${DOMAIN:-}"
+REPO="${REPO:-https://github.com/kisakosemedya/spherex-blink.git}"
+BRANCH="${BRANCH:-main}"
 
 # 1 GB machines need swap for the image re-projection step
 if [ ! -f /swapfile ]; then
@@ -13,6 +18,7 @@ if [ ! -f /swapfile ]; then
 fi
 
 dnf install -y git python3 python3-pip
+[ -d "$APP/.git" ] || git clone --branch "$BRANCH" "$REPO" "$APP"
 id app >/dev/null 2>&1 || useradd --system --home-dir "$APP" --shell /sbin/nologin app
 python3 -m venv /opt/venv
 /opt/venv/bin/pip install --no-cache-dir -r "$APP/backend/requirements.txt"
@@ -37,7 +43,7 @@ RestartSec=3
 WantedBy=multi-user.target
 UNIT
 
-# Caddy: plain HTTP on the IP address, automatic HTTPS on <ip-with-dashes>.sslip.io
+# Caddy: plain HTTP on the IP address, automatic HTTPS on $DOMAIN (or <ip-with-dashes>.sslip.io)
 curl -fsSL "https://caddyserver.com/api/download?os=linux&arch=amd64" -o /usr/local/bin/caddy
 chmod +x /usr/local/bin/caddy
 TOKEN=$(curl -fsS -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 300")
@@ -47,7 +53,7 @@ cat > /etc/caddy/Caddyfile <<CADDY
 http:// {
 	reverse_proxy 127.0.0.1:8000
 }
-${IP//./-}.sslip.io {
+${DOMAIN:-${IP//./-}.sslip.io} {
 	reverse_proxy 127.0.0.1:8000
 }
 CADDY
