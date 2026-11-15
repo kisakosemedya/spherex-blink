@@ -1,0 +1,100 @@
+{
+ "source": "SIMBAD (CDS), queried 2026-11-15 via the Harvard mirror",
+ "targets": {
+  "epsindb": {
+   "main_id": "* eps Ind B",
+   "otype": "BD*",
+   "sp_type": "T1V+T6V",
+   "plx_mas": 270.658,
+   "dist_ly": 12.05,
+   "pmra": 3981.977,
+   "pmdec": -2466.832,
+   "pm_arcsec_yr": 4.684,
+   "rv_kms": null,
+   "mag": {
+    "V": 24.12,
+    "G": 18.056162,
+    "J": 11.908,
+    "H": 11.306,
+    "K": 11.208
+   },
+   "simbad": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=%2A%20eps%20Ind%20B"
+  },
+  "barnard": {
+   "main_id": "NAME Barnard's star",
+   "otype": "BY*",
+   "sp_type": "M4V",
+   "plx_mas": 546.9759,
+   "dist_ly": 5.96,
+   "pmra": -801.551,
+   "pmdec": 10362.394,
+   "pm_arcsec_yr": 10.393,
+   "rv_kms": -110.11,
+   "mag": {
+    "V": 9.511,
+    "G": 8.193974,
+    "J": 5.244,
+    "H": 4.83,
+    "K": 4.524
+   },
+   "simbad": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=NAME%20Barnard%27s%20star"
+  },
+  "rdra": {
+   "main_id": "V* R Dra",
+   "otype": "Mi*",
+   "sp_type": "M4.5-6+e",
+   "plx_mas": 1.2509,
+   "dist_ly": 2607.37,
+   "pmra": -20.643,
+   "pmdec": 6.149,
+   "pm_arcsec_yr": 0.022,
+   "rv_kms": -132.8,
+   "mag": {
+    "V": 9.03,
+    "G": 6.374379,
+    "J": 3.71,
+    "H": 3.125,
+    "K": 2.23
+   },
+   "simbad": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=V%2A%20R%20Dra"
+  },
+  "rwaur": {
+   "main_id": "V* RW Aur",
+   "otype": "TT*",
+   "sp_type": "K1/5e+K5e",
+   "plx_mas": 15.42,
+   "dist_ly": 211.51,
+   "pmra": 7.23,
+   "pmdec": -20.33,
+   "pm_arcsec_yr": 0.022,
+   "rv_kms": 15.0,
+   "mag": {
+    "V": 9.6,
+    "G": null,
+    "J": 8.378,
+    "H": 7.621,
+    "K": 7.02
+   },
+   "simbad": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=V%2A%20RW%20Aur"
+  },
+  "wise0855": {
+   "main_id": "WISEA J085510.74-071442.5",
+   "otype": "BD*",
+   "sp_type": "Y2",
+   "plx_mas": 439.0,
+   "dist_ly": 7.43,
+   "pmra": -8123.7,
+   "pmdec": 673.2,
+   "pm_arcsec_yr": 8.152,
+   "rv_kms": null,
+   "mag": {
+    "V": null,
+    "G": null,
+    "J": 25.0,
+    "H": 23.83,
+    "K": null
+   },
+   "simbad": "https://simbad.cds.unistra.fr/simbad/sim-id?Ident=WISEA%20J085510.74-071442.5"
+  }
+ }
+}

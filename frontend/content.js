@@ -11,7 +11,7 @@ export const T = {
     searchHint: "Barnard's Star · 269.45 4.69 · 17h57m48s +04d41m36s",
     langName: { en: "English", tr: "Türkçe" },
 
-    heroLabel: "NASA SPHEREx · Space Apps 2026 · Planet X",
+    heroLabel: "NASA SPHEREx · Infrared sky survey",
     heroTitle: "Explore the infrared sky.",
     heroText: "Choose a patch of sky and compare real SPHEREx observations across dates. What moves, brightens or fades stands out.",
     heroMeta: ["Data: NASA SPHEREx DR1 · QR3", "Stars: ESA Gaia DR3", "Archive: CSA NEOSSat", "Map: CDS Aladin Lite"],
@@ -33,7 +33,7 @@ export const T = {
 
     s3Label: "Five test targets",
     s3Lead: "Five objects, five questions.",
-    s3Rest: " The challenge asks every tool to show these. Open one and watch.",
+    s3Rest: " Three of them move across the sky, two change their brightness. Open one and watch.",
     moves: "Moves", varies: "Varies",
 
     s4Label: "Proof",
@@ -140,7 +140,7 @@ export const T = {
 
     // targets page
     targetsLabel: "Targets", targetsTitle: "Five objects, five questions.",
-    targetsText: "The challenge tests every tool on these five. Each has its own page with the observations, the numbers and what to look for.",
+    targetsText: "Five objects that move or change brightness. Each has its own page with the observations, catalogue data, a spectrum and what to look for.",
     table: { name: "Object", kind: "Type", dist: "Distance", pm: "Motion", det: "Best detector" },
 
     // target page
@@ -184,7 +184,7 @@ export const T = {
     searchHint: "Barnard's Star · 269.45 4.69 · 17h57m48s +04d41m36s",
     langName: { en: "English", tr: "Türkçe" },
 
-    heroLabel: "NASA SPHEREx · Space Apps 2026 · Planet X",
+    heroLabel: "NASA SPHEREx · Kızılötesi gökyüzü taraması",
     heroTitle: "Kızılötesi gökyüzünü keşfet.",
     heroText: "Bir gökyüzü bölgesi seç, gerçek SPHEREx gözlemlerini farklı tarihlerde karşılaştır. Hareket eden, parlayan ya da sönen öne çıkar.",
     heroMeta: ["Veri: NASA SPHEREx DR1 · QR3", "Yıldızlar: ESA Gaia DR3", "Arşiv: CSA NEOSSat", "Harita: CDS Aladin Lite"],
@@ -206,7 +206,7 @@ export const T = {
 
     s3Label: "Beş test hedefi",
     s3Lead: "Beş cisim, beş soru.",
-    s3Rest: " Yarışma her aracın bunları göstermesini istiyor. Birini aç ve izle.",
+    s3Rest: " Üçü gökyüzünde kayıyor, ikisinin parlaklığı değişiyor. Birini aç ve izle.",
     moves: "Hareket ediyor", varies: "Parlaklığı değişiyor",
 
     s4Label: "Kanıt",
@@ -310,7 +310,7 @@ export const T = {
     step: "Bir alan kaydır", mapError: "Harita açılamadı. Hedef adı veya koordinatla ara.",
 
     targetsLabel: "Hedefler", targetsTitle: "Beş cisim, beş soru.",
-    targetsText: "Yarışma her aracı bu beş cisimle sınıyor. Her birinin gözlemleri, sayıları ve ne aranacağıyla kendi sayfası var.",
+    targetsText: "Hareket eden ya da parlaklığı değişen beş cisim. Her birinin gözlemleri, katalog verileri, tayfı ve ne aranacağıyla kendi sayfası var.",
     table: { name: "Cisim", kind: "Tür", dist: "Uzaklık", pm: "Hareket", det: "En iyi dedektör" },
 
     lookFor: "Ne aramalı", didYouKnow: "Biliyor muydun?", nextTarget: "Sonraki hedef",
@@ -367,7 +367,7 @@ export const TARGET_INFO = {
     },
   },
   wise0855: {
-    tag: "moves", kind: { en: "Y-type brown dwarf", tr: "Y tipi kahverengi cüce" }, dist: "7.4", pm: "8.1",
+    tag: "moves", kind: { en: "Y-type brown dwarf", tr: "Y tipi kahverengi cüce" }, dist: "7.43", pm: "8.15",
     look: {
       en: "Switch to detector 6 (4.4–5.0 µm): a faint dot steps west between visits. In the shorter detectors it vanishes; an ordinary star next to it takes over.",
       tr: "Dedektör 6’ya geç (4,4–5,0 µm): sönük bir nokta ziyaretler arasında batıya adım atar. Daha kısa dedektörlerde kaybolur; yanındaki sıradan bir yıldız öne çıkar.",
@@ -382,7 +382,7 @@ export const TARGET_INFO = {
     },
   },
   epsindb: {
-    tag: "moves", kind: { en: "Brown dwarf pair", tr: "Kahverengi cüce çifti" }, dist: "11.8", pm: "4.7",
+    tag: "moves", kind: { en: "Brown dwarf pair", tr: "Kahverengi cüce çifti" }, dist: "12.05", pm: "4.68",
     look: {
       en: "Use detector 6. Across four visits the dot drifts south-east. SPHEREx sees the two brown dwarfs as a single dot.",
       tr: "Dedektör 6’yı kullan. Dört ziyaret boyunca nokta güneydoğuya kayar. SPHEREx iki kahverengi cüceyi tek nokta olarak görür.",
@@ -453,13 +453,13 @@ export const FAQ = {
     ["Why is a bright star a flat white disc?", "It is too bright for the detector, which saturates. Its position is still reliable; its brightness is not."],
     ["What is Planet X?", "A proposed, still unseen planet far beyond Neptune. This tool cannot prove it exists, but the same method finds the Sun's cold neighbours."],
     ["What is a brown dwarf?", "An object between a planet and a star: too small to burn hydrogen, so it cools and glows mostly in the infrared."],
-    ["Is this an official NASA website?", "No. It is a student project for the NASA Space Apps Challenge 2026, built on NASA's public data."]],
+    ["Is this an official NASA website?", "No. It is an independent project built on NASA's public data."]],
   tr: [["Görüntüler neden pikselli?", "Her SPHEREx pikseli gökyüzünün yaklaşık 6 yay saniyesini kaplar. Gerçek pikselleri yumuşatmadan gösteriyoruz; hiçbir şey uydurulmuyor."],
     ["Yıldız iki kare arasında neden kayıyor?", "Yakın yıldızlar uzayda gerçekten hareket eder. Arka plandaki yıldızlar çok daha uzakta olduğu için birkaç yılda donmuş gibi görünür."],
     ["Parlak yıldız neden düz beyaz bir disk?", "Dedektör için fazla parlaktır ve doyar. Konumu yine güvenilirdir; parlaklığı değil."],
     ["Planet X nedir?", "Neptün’ün çok ötesinde olduğu öne sürülen, henüz görülmemiş bir gezegen. Bu araç varlığını kanıtlayamaz ama aynı yöntem Güneş’in soğuk komşularını bulur."],
     ["Kahverengi cüce nedir?", "Gezegenle yıldız arasında bir cisim: hidrojen yakamayacak kadar küçüktür, soğur ve çoğunlukla kızılötesinde parlar."],
-    ["Bu resmî bir NASA sitesi mi?", "Hayır. NASA’nın açık verisiyle NASA Space Apps Challenge 2026 için yapılmış bir öğrenci projesidir."]],
+    ["Bu resmî bir NASA sitesi mi?", "Hayır. NASA’nın açık verisiyle yapılmış bağımsız bir projedir."]],
 };
 
 export const SOURCES = [
@@ -473,3 +473,92 @@ export const SOURCES = [
   ["Barnard measurement: method", "https://github.com/kisakosemedya/spherex-blink/tree/main/showcase/neossat_barnard"],
   ["Source code", "https://github.com/kisakosemedya/spherex-blink"],
 ];
+
+// ---------------------------------------------------------------------------
+// second round: target picker, catalogue, spectrum, explainers
+// ---------------------------------------------------------------------------
+Object.assign(T.en, {
+  quick: [["blink", "Blink a field"], ["diff", "See what changed"], ["globe", "Sky map"], ["spec", "Spectrum"]],
+  pick: "Targets", pickCustom: "Other position",
+  catalogue: "What the catalogues say", simbadType: "Type", spType: "Spectral type", parallax: "Parallax",
+  distance: "Distance", pmCat: "Proper motion", rv: "Radial velocity", mags: "Brightness (magnitudes)",
+  catSource: "Catalogue values: SIMBAD (CDS). Distance from the parallax.",
+  otype: { "BY*": "Variable star with spots (red dwarf)", "BD*": "Brown dwarf", "Mi*": "Mira variable (red giant)", "TT*": "T Tauri star (very young)" },
+  visitsTitle: "Every visit", visitsText: "One stacked image per SPHEREx visit, same grid and brightness scale. The last tile is the difference between the first and last visit.",
+  motionTitle: "Motion measured in SPHEREx", motionNote: (a, b, y) => `Quick estimate from the ${a} and ${b} visits (${y} years apart), without parallax correction.`,
+  catalogueValue: "Catalogue", spherexValue: "SPHEREx",
+  spectrumTitle: "Spectrum", spectrumText: "Brightness at 102 infrared colours, from the SPHEREx all-sky spectral cube. Dashed lines mark water, methane, carbon dioxide and carbon monoxide bands.",
+  spectrumNote: "Quick look: mean of the survey visits, 12.9″ pixels, so nearby stars can blend. For science-grade spectra use IRSA's SPHEREx tools.",
+  spectrumWings: "This star is too bright: its core is blank in the cube, so the light is measured in the ring around it. The shape is relative.",
+  spectrumLoading: "Reading 102 channels from the SPHEREx cube…", spectrumError: "The spectrum could not be read right now.",
+  spectrumClick: "Spectrum at the selected point", csv: "Download CSV", wavelengthAxis: "Wavelength (µm)", fluxAxis: "Flux (µJy)",
+  howTitle: "How it works", howSteps: [
+    ["SPHEREx photographs the whole sky", "Every six months the telescope covers the entire sky, strip by strip, in 102 infrared colours."],
+    ["We gather the photos of one spot", "For the patch you pick, every exposure is cut out and stacked into one image per visit."],
+    ["We play them like a flipbook", "The visits play in order. Distant stars sit in the same place in every picture."],
+    ["The crosshair marks the same spot", "The crosshair never moves. A nearby star slowly walks away from it: that is real motion through space."],
+    ["Some stars blink instead of moving", "A variable star stays put but changes brightness from visit to visit."],
+  ],
+  illustration: "Illustration",
+  aboutTitle: "Meet SPHEREx", aboutText: "A NASA space telescope that maps the entire sky, again and again, in 102 colours of infrared light.",
+  parts: [
+    ["shields", "Photon shields", "Three nested cone-shaped shields block heat and light from the Sun and Earth, so the telescope cools itself without any refrigerant."],
+    ["telescope", "Telescope", "A 20 cm telescope with a very wide field of view: it sees a large patch of sky in every shot."],
+    ["detectors", "Detectors", "Six infrared detectors behind filters whose colour changes across each detector. Together they cover 0.75–5 µm in 102 channels."],
+    ["panel", "Solar panel", "Powers the spacecraft. It always faces the Sun while the shields keep the telescope in shade."],
+    ["bus", "Spacecraft body", "Points the telescope, stores the images and sends them to Earth."],
+  ],
+  questions: [["How did the universe begin?", "By mapping hundreds of millions of galaxies in 3D, SPHEREx looks for traces of the first instant after the Big Bang."],
+    ["How did galaxies grow?", "It measures the faint combined glow of all galaxies, including ones too dim to see one by one."],
+    ["Where does water come from?", "It searches icy dust clouds in our galaxy for water and other ingredients of life."]],
+  detTable: { channels: "channels", res: "resolving power R", good: "good for" },
+  neighbours: "Meet the neighbours", neighboursText: "The test targets next to the Sun. Brown dwarfs are about the size of Jupiter but much heavier; the coldest ones glow only in the infrared.",
+  sizesNote: "Illustration: sizes and temperatures are approximate.",
+  sun: "The Sun", temp: "Temperature",
+});
+Object.assign(T.tr, {
+  quick: [["blink", "Bir alanı oynat"], ["diff", "Neyin değiştiğini gör"], ["globe", "Gökyüzü haritası"], ["spec", "Tayf"]],
+  pick: "Hedefler", pickCustom: "Başka bir konum",
+  catalogue: "Kataloglar ne diyor", simbadType: "Tür", spType: "Tayf tipi", parallax: "Paralaks",
+  distance: "Uzaklık", pmCat: "Öz hareket", rv: "Radyal hız", mags: "Parlaklık (kadir)",
+  catSource: "Katalog değerleri: SIMBAD (CDS). Uzaklık paralakstan hesaplandı.",
+  otype: { "BY*": "Lekeli değişen yıldız (kırmızı cüce)", "BD*": "Kahverengi cüce", "Mi*": "Mira değişeni (kırmızı dev)", "TT*": "T Tauri yıldızı (çok genç)" },
+  visitsTitle: "Her ziyaret", visitsText: "Her SPHEREx ziyareti için üst üste konmuş tek görüntü; aynı ızgara, aynı parlaklık ölçeği. Son kare ilk ve son ziyaret arasındaki fark.",
+  motionTitle: "SPHEREx’te ölçülen hareket", motionNote: (a, b, y) => `${a} ve ${b} ziyaretlerinden hızlı tahmin (${y} yıl arayla), paralaks düzeltmesi yok.`,
+  catalogueValue: "Katalog", spherexValue: "SPHEREx",
+  spectrumTitle: "Tayf", spectrumText: "102 kızılötesi renkteki parlaklık, SPHEREx tüm gökyüzü tayf küpünden. Kesikli çizgiler su, metan, karbondioksit ve karbonmonoksit bantlarını gösterir.",
+  spectrumNote: "Hızlı bakış: tarama ziyaretlerinin ortalaması, 12,9″ pikseller; yakın yıldızlar karışabilir. Bilimsel tayf için IRSA’nın SPHEREx araçlarını kullanın.",
+  spectrumWings: "Bu yıldız fazla parlak: küpte merkezi boş, bu yüzden ışık çevresindeki halkada ölçüldü. Şekil göreli.",
+  spectrumLoading: "SPHEREx küpünden 102 kanal okunuyor…", spectrumError: "Tayf şu an okunamadı.",
+  spectrumClick: "Seçilen noktanın tayfı", csv: "CSV indir", wavelengthAxis: "Dalga boyu (µm)", fluxAxis: "Akı (µJy)",
+  howTitle: "Nasıl çalışır", howSteps: [
+    ["SPHEREx bütün gökyüzünü fotoğraflar", "Teleskop altı ayda bir bütün gökyüzünü şerit şerit, 102 kızılötesi renkte tarar."],
+    ["Bir noktanın fotoğraflarını toplarız", "Seçtiğin bölge için her poz kesilir ve her ziyaret tek görüntüde birleştirilir."],
+    ["Onları çevirmeli kitap gibi oynatırız", "Ziyaretler sırayla oynar. Uzak yıldızlar her resimde aynı yerdedir."],
+    ["Artı işareti aynı noktayı gösterir", "Artı işareti hiç kıpırdamaz. Yakın bir yıldız ondan yavaşça uzaklaşır: bu uzaydaki gerçek harekettir."],
+    ["Bazı yıldızlar hareket etmez, göz kırpar", "Değişen bir yıldız yerinde durur ama ziyaretten ziyarete parlaklığı değişir."],
+  ],
+  illustration: "Çizim",
+  aboutTitle: "SPHEREx ile tanış", aboutText: "Bütün gökyüzünü kızılötesi ışığın 102 renginde tekrar tekrar haritalayan bir NASA uzay teleskobu.",
+  parts: [
+    ["shields", "Foton kalkanları", "İç içe üç koni biçimli kalkan Güneş’in ve Dünya’nın ısısını ve ışığını keser; teleskop soğutucu sıvı olmadan kendini soğutur."],
+    ["telescope", "Teleskop", "Çok geniş görüş alanlı 20 cm’lik bir teleskop: her çekimde gökyüzünün büyük bir parçasını görür."],
+    ["detectors", "Dedektörler", "Rengi dedektör boyunca değişen filtrelerin arkasında altı kızılötesi dedektör. Birlikte 0,75–5 µm aralığını 102 kanalda kapsarlar."],
+    ["panel", "Güneş paneli", "Uzay aracına güç verir. Kalkanlar teleskobu gölgede tutarken o hep Güneş’e bakar."],
+    ["bus", "Uzay aracı gövdesi", "Teleskobu yönlendirir, görüntüleri saklar ve Dünya’ya gönderir."],
+  ],
+  questions: [["Evren nasıl başladı?", "SPHEREx yüz milyonlarca galaksiyi üç boyutlu haritalayarak Büyük Patlama’nın ilk anının izlerini arar."],
+    ["Galaksiler nasıl büyüdü?", "Tek tek görülemeyecek kadar sönükler dahil bütün galaksilerin toplam parıltısını ölçer."],
+    ["Su nereden geliyor?", "Galaksimizdeki buzlu toz bulutlarında su ve yaşamın diğer bileşenlerini arar."]],
+  detTable: { channels: "kanal", res: "ayırma gücü R", good: "ne için iyi" },
+  neighbours: "Komşularla tanış", neighboursText: "Test hedefleri Güneş’in yanında. Kahverengi cüceler Jüpiter büyüklüğündedir ama çok daha ağırdır; en soğukları yalnızca kızılötesinde parlar.",
+  sizesNote: "Çizim: boyutlar ve sıcaklıklar yaklaşıktır.",
+  sun: "Güneş", temp: "Sıcaklık",
+});
+
+// Real channel layout of the SPHEREx DR1 cube (SPECTRAL_CHANNELS table).
+export const DETECTORS = {
+  1: { wl: [0.74, 1.12], ch: 17, R: [37, 42] }, 2: { wl: [1.10, 1.65], ch: 17, R: [41, 43] },
+  3: { wl: [1.64, 2.44], ch: 17, R: [40, 42] }, 4: { wl: [2.42, 3.83], ch: 17, R: [34, 42] },
+  5: { wl: [3.81, 4.43], ch: 17, R: [108, 117] }, 6: { wl: [4.42, 5.01], ch: 17, R: [125, 135] },
+};

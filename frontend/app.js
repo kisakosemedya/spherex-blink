@@ -1,6 +1,6 @@
 // Sky Revisit core: pages, language, sky map, observation workspace and the
 // shared `app` object used by the feature modules in frontend/modules/.
-import { T, TARGET_INFO, FACTS, FAQ, SOURCES } from "./content.js";
+import { T, TARGET_INFO, FACTS, FAQ, SOURCES, DETECTORS } from "./content.js";
 
 const params = new URLSearchParams(location.search);
 const LANG = params.get("lang") === "tr" ? "tr" : (params.get("lang") === "en" ? "en" : readStoredLang());
@@ -55,10 +55,24 @@ function langHref(lang) {
   p.set("lang", lang);
   return `?${p}`;
 }
+function starPoints(cx, cy, R, r, rot) {
+  const pts = [];
+  for (let i = 0; i < 10; i++) {
+    const a = rot + (i * Math.PI) / 5, rad = i % 2 ? r : R;
+    pts.push(`${(cx + rad * Math.cos(a)).toFixed(2)},${(cy + rad * Math.sin(a)).toFixed(2)}`);
+  }
+  return pts.join(" ");
+}
+let flagId = 0;
+function flag(lang) {
+  const id = `fgb${flagId++}`;
+  if (lang === "tr") return `<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#E30A17"/><circle cx="10.5" cy="10" r="5" fill="#fff"/><circle cx="11.75" cy="10" r="4" fill="#E30A17"/><polygon fill="#fff" points="${starPoints(16.6, 10, 2.1, 0.85, Math.PI)}"/></svg>`;
+  return `<svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="${id}"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0 60,30M60,0 0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 60,30M60,0 0,30" clip-path="url(#${id})" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg>`;
+}
 function renderLang() {
-  const links = ["en", "tr"].map((l) => `<a href="${langHref(l)}" hreflang="${l}" lang="${l}" aria-current="${l === LANG}" title="${t.langName[l]}">${l.toUpperCase()}</a>`);
-  $("lang").innerHTML = `${links[0]}<span>|</span>${links[1]}`;
-  $("lang-mobile").innerHTML = links.join("");
+  const links = () => ["en", "tr"].map((l) => `<a class="lang-opt" href="${langHref(l)}" hreflang="${l}" lang="${l}" aria-current="${l === LANG}" title="${t.langName[l]}"><span class="flag">${flag(l)}</span>${l.toUpperCase()}</a>`).join("");
+  $("lang").innerHTML = links();
+  $("lang-mobile").innerHTML = links();
 }
 
 let presets = [];
@@ -76,8 +90,7 @@ function renderFooter() {
           <li><a href="?view=map" data-link="map">${t.nav.map}</a></li>
           <li><a href="?view=guide" data-link="guide">${t.nav.guide}</a></li>
           <li><a href="?view=credits" data-link="credits">${t.nav.credits}</a></li>
-          <li><a href="https://github.com/kisakosemedya/spherex-blink">${t.foot.github}</a></li>
-          <li><a href="https://www.spaceappschallenge.org/2026/challenges/planet-x-and-spherex/">${t.foot.challenge}</a></li></ul></div>
+          <li><a href="https://github.com/kisakosemedya/spherex-blink">${t.foot.github}</a></li></ul></div>
         <div><h4>${t.foot.data}</h4><ul>
           <li><a href="https://irsa.ipac.caltech.edu/Missions/spherex.html">NASA SPHEREx · IRSA</a></li>
           <li><a href="https://www.cosmos.esa.int/web/gaia/dr3">ESA Gaia DR3</a></li>
@@ -118,7 +131,7 @@ async function presetFrames(id) {
       const a = frames[0], b = frames[frames.length - 1];
       for (let i = 0; i < a.length; i++) { const v = b[i] - a[i]; if (Number.isFinite(v)) diffs.push(Math.abs(v)); }
       const sigma = 1.4826 * percentile(diffs, 0.5);
-      return { grid: d.grid, frames, hi, floor: 2.5 * sigma, top: Math.max(percentile(diffs, 0.999), 8 * sigma), visits: d.visits.map(({ data, ...v }) => v) };
+      return { grid: d.grid, scale: d.arcsec_per_pixel, frames, hi, floor: 2.5 * sigma, top: Math.max(percentile(diffs, 0.999), 8 * sigma), visits: d.visits.map(({ data, ...v }) => v) };
     });
   frameCache.set(id, job);
   return job;
@@ -258,12 +271,7 @@ function renderHome(el) {
     <div class="hero-shade"></div>
     <div class="frame" aria-hidden="true"></div>
     <div class="hero-inner">
-      <div class="hero-tools">
-        <a class="icon-btn" ${linkAttrs("observations")} title="${t.blink}">${ICON.blink}</a>
-        <a class="icon-btn" ${linkAttrs("observations", "&ra=133.7598&dec=-7.2422&det=6&fov=150&mode=diff")} title="${t.difference}">${ICON.diff}</a>
-        <a class="icon-btn" ${linkAttrs("map")} title="${t.nav.map}">${ICON.globe}</a>
-        <a class="icon-btn" ${linkAttrs("target", "&id=rdra")} title="${t.features[4][1]}">${ICON.curve}</a>
-      </div>
+      <nav class="hero-quick" aria-label="Quick links">${t.quick.map(([ic, label], i) => `<a ${[linkAttrs("observations"), linkAttrs("observations", "&ra=133.7598&dec=-7.2422&det=6&fov=150&mode=diff"), linkAttrs("map"), linkAttrs("target", "&id=epsindb")][i]}><span class="icon-btn" aria-hidden="true">${ICON[ic]}</span><span>${label}</span></a>`).join("")}</nav>
       <p class="hero-note">${t.heroText}</p>
       <div class="hero-title"><p class="label">${t.heroLabel}</p><h1 class="display display--xl">${t.heroTitle}</h1></div>
       <div class="hero-side"><p>${t.heroMeta.join(" · ")}</p><div class="row"><a class="btn btn--primary" ${linkAttrs("observations")}>${t.open}</a><a class="btn" ${linkAttrs("map")}>${t.nav.map}</a></div></div>
@@ -286,8 +294,8 @@ function renderHome(el) {
   </div></section>
 
   <section class="section"><div class="wrap">
-    ${sectionHead("Ø2", t.s2Label, t.steps[0][0] + " → " + t.steps[2][0] + ".", "")}
-    <div class="steps">${steps}</div>
+    ${sectionHead("Ø2", t.howTitle, t.steps[0][0] + " → " + t.steps[2][0] + ".", "")}
+    <div id="how-home"></div>
     <div class="row" style="margin-top:2rem"><a class="btn btn--primary" ${linkAttrs("observations")}>${t.open}</a><a class="btn" ${linkAttrs("guide")}>${t.nav.guide}</a></div>
   </div></section>
 
@@ -315,10 +323,7 @@ function renderHome(el) {
 
   <section class="section"><div class="wrap">
     ${sectionHead("Ø6", t.s6Label, t.s6Lead, t.s6Rest)}
-    <div class="tiles tiles-3">${stats}</div>
-    <div class="detstrip" role="group" aria-label="${t.detector}">${[1, 2, 3, 4, 5, 6].map((d, i) => `<button type="button" data-det="${d}" style="background:${greys[i]};color:${i < 3 ? "#000" : "#fff"}" aria-pressed="${d === 6}">D${d}</button>`).join("")}</div>
-    <p class="detnote" id="detnote">${t.detectors[6]}</p>
-    <p class="muted small"><a href="https://irsa.ipac.caltech.edu/Missions/spherex.html">${t.statSource}</a></p>
+    <div id="about-home"></div>
   </div></section>
 
   <section class="section"><div class="wrap">
@@ -353,11 +358,8 @@ function renderHome(el) {
   </section>`;
 
   deck(el.querySelector("#deck-home"), t.s8Label, FACTS[LANG]);
-  el.querySelector(".detstrip").addEventListener("click", (e) => {
-    const b = e.target.closest("button"); if (!b) return;
-    el.querySelectorAll(".detstrip button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-    el.querySelector("#detnote").textContent = t.detectors[b.dataset.det];
-  });
+  howItWorks(el.querySelector("#how-home"));
+  aboutSpherex(el.querySelector("#about-home"));
   el.querySelector("#random-field").onclick = () => {
     const ra = Math.random() * 360, dec = Math.asin(Math.random() * 2 - 1) * 180 / Math.PI;
     navigate("observations", { ra: ra.toFixed(4), dec: dec.toFixed(4), det: 2, fov: 150 });
@@ -370,15 +372,13 @@ function renderHome(el) {
 
 async function heroMap(el) {
   try {
-    const { aladin } = await makeMap(el, { ra: 269.45, dec: 4.77, fov: 70, projection: "SIN", micron: 1.53 });
+    // A field under ~40 degrees skips the 1.1 MB all-sky preview the archive
+    // serves for wide views; the map stays still so no new tiles are requested.
+    const { aladin } = await makeMap(el, { ra: 271.0, dec: 2.5, fov: 34, projection: "SIN", micron: 1.53 });
+    setTimeout(() => el.classList.add("ready"), 1500);
     aladin.on("objectClicked", (o) => { const id = o?.data?.id; if (id) navigate("target", { id }); });
-    if (!reduced) {
-      let ra = 269.45, idle = true;
-      el.addEventListener("pointerdown", () => { idle = false; });
-      el.addEventListener("wheel", () => { idle = false; }, { passive: true });
-      setInterval(() => { if (idle && current === "home") { ra = (ra - 0.04 + 360) % 360; aladin.gotoRaDec(ra, 4.77); } }, 60);
-    }
   } catch {
+    el.classList.add("ready");
     el.innerHTML = `<canvas class="hero-fallback" aria-hidden="true"></canvas>`;
     presetFrames("barnard").then((set) => paint(el.querySelector("canvas"), set, 0)).catch(() => {});
   }
@@ -412,6 +412,7 @@ function renderTargets(el) {
   el.innerHTML = `
   <header class="page-head"><span class="num" aria-hidden="true">Ø3</span><div class="wrap" style="position:relative">
     <p class="label">${t.targetsLabel}</p><h1 class="display">${t.targetsTitle}</h1><p class="lead">${t.targetsText}</p></div></header>
+  <section class="section"><div class="wrap">${sectionHead("Ø1", t.neighbours, t.neighbours + ".", " " + t.neighboursText)}${neighboursSVG()}<p class="muted small">${t.sizesNote}</p></div></section>
   <section class="section" style="padding-top:3rem;padding-bottom:calc(var(--section) + 4rem)"><span class="ghost" aria-hidden="true">TARGETS</span><div class="wrap">
     <div class="cards">${presets.map(targetCard).join("")}</div></div></section>
   <section class="section"><div class="wrap"><div class="table-scroll"><table class="compare-table">
@@ -421,38 +422,276 @@ function renderTargets(el) {
 function renderTarget(el, id) {
   const p = presetById(id) || presets[0];
   const info = TARGET_INFO[p.id];
+  const cat = CATALOG?.targets?.[p.id];
   const idx = presets.indexOf(p), nextP = presets[(idx + 1) % presets.length];
+  const dist = cat?.dist_ly ?? (info.dist ? Number(info.dist) : null);
+  const pm = cat?.pm_arcsec_yr ?? (info.pm ? Number(info.pm) : null);
+  const movers = info.tag === "moves";
   const stats = [
-    [ICON.target, info.dist ? `${num(info.dist, dec(info.dist))}<small>${t.ly}</small>` : "—", t.statDist],
-    [ICON.ruler, info.pm ? `${num(info.pm, dec(info.pm))}<small>″/yr</small>` : `<small>${t.varies}</small>`, t.statPm],
-    [ICON.temp, `<span style="font-size:.5em">${info.kind[LANG]}</span>`, t.statKind],
+    [ICON.target, dist ? `${num(dist, dist < 100 ? 2 : 0)}<small>${t.ly}</small>` : "—", t.statDist],
+    [ICON.ruler, movers && pm ? `${num(pm, 2)}<small>″/yr</small>` : `<small>${t.varies}</small>`, t.statPm],
+    [ICON.temp, `<span style="font-size:.55em">${esc(cat?.sp_type || info.kind[LANG])}</span>`, `${t.spType} · ${info.kind[LANG]}`],
     [ICON.spec, `D${p.det}`, `${t.statDet} · ${band(p.det)}`],
   ].map(([ic, v, n]) => `<div class="tile"><span class="icon-box">${ic}</span><span class="value">${v}</span><span class="name">${n}</span></div>`).join("");
   const proof = p.id === "barnard" ? `
-    <section class="section"><div class="wrap">${sectionHead("Ø4", t.s4Label, t.s4Lead, t.s4Rest)}
+    <section class="section"><div class="wrap">${sectionHead("Ø6", t.s4Label, t.s4Lead, t.s4Rest)}
       <div class="split"><figure class="gif-frame crop is-on">${CROP}<img src="assets/barnard/0.png" data-cycle="assets/barnard/0.png|assets/barnard/1.png|assets/barnard/2.png|assets/barnard/3.png" alt="${esc(t.s1Caption)}" loading="lazy" width="450" height="486"><figcaption>${t.s1Caption}</figcaption></figure>
       <div class="timeline" style="grid-template-columns:1fr;margin:0">${t.timeline.map(([y, pp, s]) => `<div class="tline cut" style="min-height:0"><span class="year">${y}</span><p>${pp}</p><span class="mono">${s}</span></div>`).join("")}</div></div></div></section>` : "";
   el.innerHTML = `
   <section class="cover">${blinkBox(p.id, { stamp: false, cross: false })}<div class="hero-shade"></div>
     <div class="cover-inner"><div><p class="label">${tag(info.tag)}</p><h1 class="display display--xl">${esc(p.name[LANG])}</h1></div><p>${esc(p.blurb[LANG])}</p></div></section>
+  <nav class="target-tabs wrap" aria-label="${t.pick}">${presets.map((q) => `<a ${linkAttrs("target", `&id=${q.id}`)} aria-current="${q.id === p.id ? "page" : "false"}"><span class="dot ${TARGET_INFO[q.id].tag}"></span>${esc(q.name[LANG])}</a>`).join("")}</nav>
   <section class="section"><div class="wrap">
     <span class="num" aria-hidden="true">Ø1</span>
-    <div class="tiles tiles-2" style="grid-template-columns:repeat(4,minmax(0,1fr))">${stats}</div>
+    <div class="tiles tiles-4">${stats}</div>
   </div></section>
   <section class="section"><div class="wrap">
+    <span class="num" aria-hidden="true">Ø2</span>
     <div class="section-head"><p class="label">${t.lookFor}</p><p class="statement"><strong>${info.look[LANG]}</strong></p></div>
     <div class="ws-embed" id="ws-slot-target"></div>
     <div class="row" style="margin-top:1.25rem"><a class="btn" ${linkAttrs("observations", `&ra=${p.ra}&dec=${p.dec}&det=${p.det}&fov=${p.fov}`)}>${t.fullWorkspace}</a></div>
   </div></section>
+  <section class="section"><div class="wrap">
+    ${sectionHead("Ø3", t.visitsTitle, t.visitsTitle + ".", " " + t.visitsText)}
+    <div class="visits" id="visits"></div>
+    <div id="motion"></div>
+  </div></section>
+  <section class="section" id="spectrum"><div class="wrap">
+    ${sectionHead("Ø4", t.spectrumTitle, t.spectrumTitle + ".", " " + t.spectrumText)}
+    <div class="spec" id="spec-target"></div>
+  </div></section>
+  <section class="section"><div class="wrap">
+    ${sectionHead("Ø5", t.catalogue, (cat?.main_id || p.name[LANG]) + ".", " " + (cat ? (t.otype[cat.otype] || cat.otype) + "." : ""))}
+    <div id="catalogue">${catalogueBlock(cat)}</div>
+  </div></section>
   ${proof}
-  <section class="section"><div class="wrap"><span class="num" aria-hidden="true">Ø${p.id === "barnard" ? 5 : 4}</span><div class="deck" id="deck-target"></div></div></section>
+  <section class="section"><div class="wrap"><span class="num" aria-hidden="true">Ø${p.id === "barnard" ? 7 : 6}</span><div class="deck" id="deck-target"></div></div></section>
   <section class="section"><div class="wrap"><p class="label">${t.nextTarget}</p>
     <a class="card crop" style="max-width:520px" ${linkAttrs("target", `&id=${nextP.id}`)}>${CROP}<div style="position:relative">${blinkBox(nextP.id, { stamp: false })}<span class="card-top">${esc(nextP.name[LANG])} →</span></div></a></div></section>`;
-  // the tile row with four tiles needs its own breakpoint
-  const row = el.querySelector(".tiles");
-  const fix = () => { row.style.gridTemplateColumns = innerWidth < 640 ? "1fr" : innerWidth < 1000 ? "repeat(2,minmax(0,1fr))" : "repeat(4,minmax(0,1fr))"; };
-  fix(); addEventListener("resize", fix);
   deck(el.querySelector("#deck-target"), t.didYouKnow, info.facts[LANG]);
+  visitsStrip(el.querySelector("#visits"), el.querySelector("#motion"), p, movers, pm);
+  spectrumBlock(el.querySelector("#spec-target"), p.ra, p.dec);
+}
+
+// ---------------------------------------------------------------------------
+// target page blocks: visits, measured motion, spectrum, catalogue
+// ---------------------------------------------------------------------------
+let CATALOG = null;
+function catalogueBlock(cat) {
+  if (!cat) return "";
+  const m = cat.mag || {};
+  const rows = [
+    [t.simbadType, `${esc(t.otype[cat.otype] || cat.otype)} <span class="mono muted">${esc(cat.otype)}</span>`],
+    [t.spType, esc(cat.sp_type || "—")],
+    [t.parallax, cat.plx_mas != null ? `<span class="mono">${num(cat.plx_mas, 2)} mas</span>` : "—"],
+    [t.distance, cat.dist_ly != null ? `<span class="mono">${num(cat.dist_ly, cat.dist_ly < 100 ? 2 : 0)} ${t.ly} · ${num(cat.dist_ly / 3.26156, cat.dist_ly < 100 ? 2 : 0)} pc</span>` : "—"],
+    [t.pmCat, cat.pm_arcsec_yr != null ? `<span class="mono">${num(cat.pm_arcsec_yr, 3)} ″/yr</span>` : "—"],
+    [t.rv, cat.rv_kms != null ? `<span class="mono">${num(cat.rv_kms, 1)} km/s</span>` : "—"],
+  ].map(([k, v]) => `<div class="kv"><span>${k}</span><b>${v}</b></div>`).join("");
+  const mags = ["V", "G", "J", "H", "K"].map((b) => `<div><span>${b}</span><b class="mono">${m[b] != null ? num(m[b], 2) : "—"}</b></div>`).join("");
+  return `<div class="cat-grid"><div class="panel">${rows}</div>
+    <div class="panel"><h3>${t.mags}</h3><div class="mags">${mags}</div>
+      <p class="muted small" style="margin-top:1rem">${t.catSource}</p>
+      <a class="btn btn--sm" href="${cat.simbad}" target="_blank" rel="noopener">SIMBAD ↗</a></div></div>`;
+}
+
+function centroid(set, i, guess) {
+  const n = set.grid, im = set.frames[i];
+  let max = -Infinity;
+  for (const v of im) if (Number.isFinite(v) && v > max) max = v;
+  let cx = guess ? guess[0] : n / 2 - 0.5, cy = guess ? guess[1] : n / 2 - 0.5;
+  for (let it = 0; it < 4; it++) {
+    const vals = [], pts = [];
+    for (let y = Math.max(0, Math.floor(cy - 6)); y <= Math.min(n - 1, Math.ceil(cy + 6)); y++)
+      for (let x = Math.max(0, Math.floor(cx - 6)); x <= Math.min(n - 1, Math.ceil(cx + 6)); x++) {
+        if (Math.hypot(x - cx, y - cy) > 6) continue;
+        const v = im[y * n + x];
+        const w = Number.isFinite(v) ? v : max;   // a blank (saturated) core counts as bright
+        vals.push(w); pts.push([x, y, w]);
+      }
+    const med = [...vals].sort((a, b) => a - b)[Math.floor(vals.length / 2)];
+    let sw = 0, sx = 0, sy = 0;
+    for (const [x, y, w] of pts) { const ww = Math.max(0, w - med); sw += ww; sx += ww * x; sy += ww * y; }
+    if (!sw) break;
+    cx = sx / sw; cy = sy / sw;
+  }
+  return [cx, cy];
+}
+function compass8(east, north) {
+  const dirs = LANG === "tr" ? ["kuzey", "kuzeydoğu", "doğu", "güneydoğu", "güney", "güneybatı", "batı", "kuzeybatı"] : ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"];
+  const pa = (Math.atan2(east, north) * 180 / Math.PI + 360) % 360;
+  return dirs[Math.round(pa / 45) % 8];
+}
+async function visitsStrip(host, motionHost, p, movers, catPm) {
+  let set;
+  try { set = await presetFrames(p.id); } catch { return; }
+  host.innerHTML = set.visits.map((v, i) => `<figure class="visit crop">${CROP}<canvas aria-hidden="true"></canvas><figcaption><b class="mono">${v.date}</b><span>${t.exposures(v.n_images)}</span></figcaption></figure>`).join("")
+    + `<figure class="visit crop is-on">${CROP}<canvas aria-hidden="true"></canvas><figcaption><b class="mono">${t.difference}</b><span>${set.visits.at(-1).date} − ${set.visits[0].date}</span></figcaption></figure>`;
+  const canvases = host.querySelectorAll("canvas");
+  set.visits.forEach((_, i) => paint(canvases[i], set, i));
+  paint(canvases[canvases.length - 1], set, 0, "diff");
+  if (!movers) return;
+  const most = Math.max(...set.visits.map((v) => v.n_images));
+  const solid = set.visits.map((v, i) => (v.n_images >= 0.4 * most ? i : -1)).filter((i) => i >= 0);
+  if (solid.length < 2) return;
+  const a = solid[0], b = solid.at(-1);
+  const c0 = centroid(set, a), c1 = centroid(set, b, c0);
+  const west = (c1[0] - c0[0]) * set.scale, north = (c1[1] - c0[1]) * set.scale;
+  const yrs = (set.visits[b].mjd - set.visits[a].mjd) / 365.25;
+  const rate = Math.hypot(west, north) / yrs;
+  motionHost.innerHTML = `<div class="tiles tiles-2" style="margin-top:8px">
+    <div class="tile"><span class="icon-box">${ICON.ruler}</span><span class="value">${num(rate, 1)}<small>″/yr</small></span><span class="name">${t.spherexValue} · ${t.motionTitle} · ${compass8(-west, north)}</span><p>${t.motionNote(set.visits[a].date, set.visits[b].date, num(yrs, 2))}</p></div>
+    <div class="tile"><span class="icon-box">${ICON.gaia}</span><span class="value">${catPm ? num(catPm, 2) : "—"}<small>″/yr</small></span><span class="name">${t.catalogueValue} · SIMBAD</span><p>${t.catSource}</p></div></div>`;
+}
+
+const LINES = [["H₂O", 3.0], ["CH₄", 3.3], ["CO₂", 4.27], ["CO", 4.67]];
+function spectrumSVG(data) {
+  const W = 760, H = 320, L = 64, R = 14, T = 26, B = 44;
+  const pts = data.channels.filter((c) => c.flux_ujy != null);
+  if (!pts.length) return "";
+  // robust axis: a few outlier channels (cosmic rays, edge pixels) must not flatten the curve
+  const sorted = pts.map((c) => c.flux_ujy).sort((a, b) => a - b);
+  const q = (f) => sorted[Math.min(sorted.length - 1, Math.max(0, Math.round(f * (sorted.length - 1))))];
+  const q1 = q(0.25), q3 = q(0.75), iqr = Math.max(q3 - q1, Math.abs(q(0.5)) * 0.05, 1);
+  let lo = Math.max(sorted[0], q1 - 3 * iqr), hi = Math.min(sorted.at(-1), q3 + 3 * iqr);
+  lo = Math.min(0, lo);
+  if (hi <= lo) hi = lo + 1;
+  const pad = (hi - lo) * 0.08; hi += pad; lo = lo < 0 ? lo - pad : lo;
+  const clip = (v) => Math.min(hi, Math.max(lo, v));
+  const x = (w) => L + ((w - 0.7) / (5.05 - 0.7)) * (W - L - R);
+  const y = (v) => H - B - ((clip(v) - lo) / (hi - lo)) * (H - B - T);
+  const fmt = (v) => Math.abs(v) >= 1e6 ? `${num(v / 1e6, 1)}M` : Math.abs(v) >= 1e3 ? `${num(v / 1e3, 0)}k` : num(v, 0);
+  const bands = Object.entries(DETECTORS).map(([d, o], i) => `<rect x="${x(o.wl[0])}" y="${T}" width="${x(o.wl[1]) - x(o.wl[0])}" height="${H - B - T}" fill="${i % 2 ? "#0f0f0f" : "#141414"}"/><text x="${(x(o.wl[0]) + x(o.wl[1])) / 2}" y="${T - 8}" text-anchor="middle" class="ax">D${d}</text>`).join("");
+  const lines = LINES.map(([n, w]) => `<line x1="${x(w)}" x2="${x(w)}" y1="${T}" y2="${H - B}" stroke="#666" stroke-dasharray="3 4"/><text x="${x(w) + 4}" y="${T + 14}" class="ax">${n}</text>`).join("");
+  const xt = [1, 2, 3, 4, 5].map((w) => `<text x="${x(w)}" y="${H - B + 18}" text-anchor="middle" class="ax">${w}</text>`).join("");
+  const yt = [0, 1, 2, 3, 4].map((k) => { const v = lo + ((hi - lo) * k) / 4; return `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#1f1f1f"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" class="ax">${fmt(v)}</text>`; }).join("");
+  let path = "", prev = null;
+  for (const c of data.channels) {
+    if (c.flux_ujy == null) { prev = null; continue; }
+    path += `${prev ? "L" : "M"}${x(c.wavelength_um).toFixed(1)},${y(c.flux_ujy).toFixed(1)}`;
+    prev = c;
+  }
+  const dots = pts.map((c) => c.flux_ujy !== clip(c.flux_ujy)
+    ? `<path d="M${x(c.wavelength_um).toFixed(1)},${(y(c.flux_ujy) + (c.flux_ujy > hi ? -2 : 2)).toFixed(1)}l-4,${c.flux_ujy > hi ? 7 : -7}h8z" fill="#888"><title>${num(c.wavelength_um, 3)} µm · ${num(c.flux_ujy, 0)} µJy · D${c.detector} (off scale)</title></path>`
+    : `<circle cx="${x(c.wavelength_um).toFixed(1)}" cy="${y(c.flux_ujy).toFixed(1)}" r="3"><title>${num(c.wavelength_um, 3)} µm · ${num(c.flux_ujy, 0)} µJy · D${c.detector}</title></circle>`).join("");
+  return `<svg class="spec-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${t.spectrumTitle}">${bands}${yt}${lines}
+    <path d="${path}" fill="none" stroke="#666" stroke-width="1.2"/><g fill="#fff">${dots}</g>${xt}
+    <text x="${(L + W - R) / 2}" y="${H - 6}" text-anchor="middle" class="ax">${t.wavelengthAxis}</text>
+    <text x="14" y="${(T + H - B) / 2}" transform="rotate(-90 14 ${(T + H - B) / 2})" text-anchor="middle" class="ax">${t.fluxAxis}</text></svg>`;
+}
+async function spectrumBlock(host, ra, dec, { title } = {}) {
+  if (!host) return;
+  host.innerHTML = `${title ? `<h2>${title}</h2>` : ""}<p class="muted small"><span class="spinner" style="display:inline-block;width:14px;height:14px;margin:0 .5rem -2px 0"></span>${t.spectrumLoading}</p>`;
+  try {
+    const res = await fetch(`/api/spectrum?${new URLSearchParams({ ra, dec })}`);
+    if (!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    const csv = "wavelength_um,flux_ujy,detector\n" + data.channels.map((c) => `${c.wavelength_um},${c.flux_ujy ?? ""},${c.detector}`).join("\n");
+    host.innerHTML = `${title ? `<h2>${title}</h2>` : ""}<div class="spec-box crop is-on">${CROP}${spectrumSVG(data)}</div>
+      ${data.saturated ? `<p class="small" style="color:var(--light)">${t.spectrumWings}</p>` : ""}
+      <p class="muted small">${t.spectrumNote} <span class="mono">RA ${ra}° · Dec ${dec}°</span></p>
+      <div class="row"><a class="btn btn--sm" download="spherex_spectrum_${ra}_${dec}.csv" href="data:text/csv;charset=utf-8,${encodeURIComponent(csv)}">${t.csv}</a>
+      <a class="btn btn--sm" href="https://irsa.ipac.caltech.edu/Missions/spherex.html" target="_blank" rel="noopener">IRSA SPHEREx ↗</a></div>`;
+  } catch {
+    host.innerHTML = `${title ? `<h2>${title}</h2>` : ""}<p class="muted small">${t.spectrumError}</p>`;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// explainers: how it works (animated), meet SPHEREx, the neighbours
+// ---------------------------------------------------------------------------
+function howItWorks(el) {
+  el.innerHTML = `<div class="how-grid">
+    <div class="how-stage crop is-on">${CROP}<canvas width="96" height="96" aria-hidden="true"></canvas><span class="how-tag">${t.illustration}</span><span class="how-season mono"></span></div>
+    <ol class="how-steps">${t.howSteps.map(([h, p], i) => `<li><button type="button" data-i="${i}"><span class="mono">0${i + 1}</span><span class="h">${h}</span><span class="p">${p}</span><i class="bar"><b></b></i></button></li>`).join("")}</ol></div>`;
+  const cv = el.querySelector("canvas"), ctx = cv.getContext("2d"), label = el.querySelector(".how-season");
+  let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const stars = Array.from({ length: 70 }, () => [Math.floor(rnd() * 96), Math.floor(rnd() * 96), 0.15 + rnd() * 0.6, rnd() < 0.15 ? 2 : 1]);
+  const seasons = ["2025-08", "2026-03", "2026-08"];
+  let step = 0, season = 0, tick = 0, auto = !reduced, pausedUntil = 0;
+  const px = (x, y, s, b) => { ctx.fillStyle = `rgba(255,255,255,${b})`; ctx.fillRect(x, y, s, s); };
+  function draw() {
+    ctx.fillStyle = "#000"; ctx.fillRect(0, 0, 96, 96);
+    for (const [x, y, b, s] of stars) px(x, y, s, b * (step === 0 ? 0.5 : 1));
+    if (step === 0) { const sx = (tick * 6) % 120 - 24; ctx.fillStyle = "rgba(255,255,255,.08)"; ctx.fillRect(sx, 0, 18, 96); ctx.fillStyle = "rgba(255,255,255,.35)"; ctx.fillRect(sx + 17, 0, 1, 96); }
+    if (step === 1) { ctx.strokeStyle = "#f2ae59"; ctx.lineWidth = 1; ctx.strokeRect(30.5, 30.5, 35, 35); }
+    if (step >= 2) {
+      const my = 58 - season * 7;                   // the mover walks north
+      px(46, my, 4, 1);
+      const bb = [1, 0.25, 0.75][season];             // the variable star blinks
+      px(20, 22, 3, bb);
+    } else { px(46, 58, 4, 1); px(20, 22, 3, 1); }
+    if (step >= 3) { ctx.fillStyle = "rgba(242,174,89,.9)"; ctx.fillRect(47.5, 52, 1, 18); ctx.fillRect(39, 59.5, 18, 1); }
+    if (step === 3) { ctx.strokeStyle = "#fff"; ctx.strokeRect(43.5, 58 - season * 7 - 3.5, 10, 10); }
+    if (step === 4) { ctx.strokeStyle = "#fff"; ctx.strokeRect(17.5, 19.5, 8, 8); }
+    label.textContent = step >= 2 ? `Season ${season + 1} · ${seasons[season]}`.replace("Season", LANG === "tr" ? "Tarama" : "Season") : "";
+  }
+  function select(i, byUser) {
+    step = i; season = 0;
+    el.querySelectorAll(".how-steps button").forEach((b, k) => { b.setAttribute("aria-current", String(k === i)); b.classList.remove("run"); void b.offsetWidth; if (k === i && auto && !byUser) b.classList.add("run"); });
+    if (byUser) pausedUntil = Date.now() + 15000;
+    draw();
+  }
+  el.querySelectorAll(".how-steps button").forEach((b) => (b.onclick = () => select(Number(b.dataset.i), true)));
+  select(0);
+  if (!reduced) {
+    setInterval(() => { if (!el.isConnected || !el.offsetParent) return; tick++; if (step >= 2 && tick % 2 === 0) season = (season + 1) % 3; draw(); }, 400);
+    setInterval(() => { if (!el.offsetParent || Date.now() < pausedUntil) return; select((step + 1) % t.howSteps.length); }, 5200);
+  }
+}
+
+function aboutSpherex(el) {
+  const parts = Object.fromEntries(t.parts.map(([id, n, d]) => [id, [n, d]]));
+  const greys = ["#d9d9d9", "#b3b3b3", "#8c8c8c", "#666", "#404040", "#262626"];
+  el.innerHTML = `<div class="about-grid">
+    <figure class="sc crop is-on">${CROP}
+      <svg viewBox="0 0 400 420" role="img" aria-label="${t.aboutTitle}">
+        <g data-part="shields" tabindex="0"><polygon points="70,30 330,30 276,200 124,200"/><polygon points="96,62 304,62 262,200 138,200"/><polygon points="122,94 278,94 248,200 152,200"/></g>
+        <g data-part="telescope" tabindex="0"><rect x="172" y="120" width="56" height="112"/><ellipse cx="200" cy="120" rx="28" ry="6"/></g>
+        <g data-part="detectors" tabindex="0"><rect x="178" y="236" width="44" height="22"/><path d="M185 236v22M193 236v22M201 236v22M209 236v22M217 236v22"/></g>
+        <g data-part="bus" tabindex="0"><rect x="138" y="262" width="124" height="70"/><path d="M138 285h124M138 308h124"/></g>
+        <g data-part="panel" tabindex="0"><rect x="34" y="346" width="332" height="40"/><path d="M75 346v40M117 346v40M159 346v40M200 346v40M241 346v40M283 346v40M325 346v40M34 366h332"/></g>
+      </svg>
+      <figcaption>${t.illustration}</figcaption></figure>
+    <div class="about-side">
+      <div class="seg" id="part-buttons">${t.parts.map(([id, n]) => `<button class="btn btn--sm btn--plain" type="button" data-part="${id}" aria-pressed="${id === "shields"}">${n}</button>`).join("")}</div>
+      <div class="panel part-desc"><h3 id="part-name">${parts.shields[0]}</h3><p id="part-text">${parts.shields[1]}</p></div>
+      <div class="tiles tiles-3 small-tiles">${t.spherexStats.map(([v, u, n]) => `<div class="tile"><span class="value">${v}${u ? `<small>${u}</small>` : ""}</span><span class="name">${n}</span></div>`).join("")}</div>
+      <p class="muted small"><a href="https://irsa.ipac.caltech.edu/Missions/spherex.html">${t.statSource}</a></p>
+    </div></div>
+    <div class="features" style="margin-top:8px">${t.questions.map(([q, a], i) => `<div class="feature cut"><span class="mono muted">0${i + 1}</span><h3>${q}</h3><p>${a}</p></div>`).join("")}</div>
+    <div class="dets">${[1, 2, 3, 4, 5, 6].map((d, i) => {
+      const o = DETECTORS[d], text = t.detectors[d], good = text.slice(text.indexOf(". ") + 2);
+      return `<article class="det"><span class="swatch" style="background:${greys[i]}"></span><span class="name">D${d}</span>
+        <b class="mono">${num(o.wl[0], 2)}–${num(o.wl[1], 2)} µm</b><span class="mono muted">${o.ch} ${t.detTable.channels} · R ${o.R[0]}–${o.R[1]}</span><p>${good}</p></article>`;
+    }).join("")}</div>`;
+  const pick = (id) => {
+    el.querySelectorAll("[data-part]").forEach((g) => g.classList.toggle("on", g.dataset.part === id));
+    el.querySelectorAll("#part-buttons button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.part === id)));
+    el.querySelector("#part-name").textContent = parts[id][0];
+    el.querySelector("#part-text").textContent = parts[id][1];
+  };
+  el.querySelectorAll("[data-part]").forEach((g) => { g.addEventListener("click", () => pick(g.dataset.part)); g.addEventListener("keydown", (e) => { if (e.key === "Enter") pick(g.dataset.part); }); });
+  pick("shields");
+}
+
+function neighboursSVG() {
+  // radii in solar radii (approximate) scaled; the Sun is cut by the frame
+  const k = 600;
+  const bodies = [
+    [t.sun, null, "~5,800 K", 1.0, -470, "#f1e6cf"],
+    [presetById("barnard")?.name[LANG], "barnard", "~3,200 K", 0.187, 300, "#d9744a"],
+    ["ε Indi Ba", "epsindb", "~1,300 K", 0.09, 530, "#8a3b2a"],
+    ["ε Indi Bb", "epsindb", "~900 K", 0.085, 650, "#6b2b22"],
+    [presetById("wise0855")?.name[LANG], "wise0855", "~285 K", 0.09, 860, "#3d1d22"],
+  ];
+  const cy = 190;
+  const circles = bodies.map(([n, id, temp, r, cx, col]) => {
+    const rr = r * k;
+    const label = id ? `<a href="?view=target&id=${id}" data-link="target"><text x="${cx}" y="${cy + rr + 30}" text-anchor="middle" class="nb-name">${esc(n)}</text></a>` : `<text x="${Math.max(cx + rr - 70, 40)}" y="352" class="nb-name">${esc(n)}</text>`;
+    return `<circle cx="${cx}" cy="${cy}" r="${rr}" fill="${col}" stroke="#fff" stroke-opacity=".15"/>${label}<text x="${id ? cx : Math.max(cx + rr - 70, 40)}" y="${id ? cy + rr + 50 : 372}" ${id ? 'text-anchor="middle"' : ""} class="ax">${t.temp} ${temp}</text>`;
+  }).join("");
+  return `<div class="nb crop is-on">${CROP}<svg viewBox="0 0 1000 400" role="img" aria-label="${t.neighbours}"><rect width="1000" height="400" fill="#050505"/>${circles}</svg></div>`;
 }
 
 function renderGuide(el) {
@@ -706,6 +945,7 @@ function describe(skipped) {
   state.targetId = preset?.id;
   state.name = preset ? preset.name[LANG] : t.custom;
   $("ws-name").textContent = state.name;
+  $("picker").querySelectorAll("button[data-id]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.id === state.targetId)));
   const info = preset && TARGET_INFO[preset.id];
   const meta = `RA ${state.ra}° · Dec ${state.dec}° · D${state.det} · ${state.fov}″`;
   $("ws-meta").textContent = meta;
@@ -822,14 +1062,27 @@ $("stage").addEventListener("keydown", (e) => {
   if (c) { e.preventDefault(); $(c).click(); }
   if (/^[1-6]$/.test(e.key)) { $("det").value = e.key; $("det").onchange(); }
 });
-$("canvas").addEventListener("click", (e) => {
-  if (!state.visits.length) return;
-  const box = e.currentTarget.getBoundingClientRect();
+$("stage").addEventListener("click", (e) => {
+  // listen on the stage: star circles drawn over the canvas must not swallow the click
+  if (!state.visits.length || e.target.closest(".veil, button, a")) return;
+  const box = $("canvas").getBoundingClientRect();
+  if (e.clientX < box.left || e.clientX > box.right || e.clientY < box.top || e.clientY > box.bottom) return;
   const east = (0.5 - (e.clientX - box.left) / box.width) * state.fov;
   const north = (0.5 - (e.clientY - box.top) / box.height) * state.fov;
   selectTab("measure");
+  const raC = state.ra + east / 3600 / Math.cos((state.dec * Math.PI) / 180), decC = state.dec + north / 3600;
+  spectrumBlock($("spec-click"), Number(((raC + 360) % 360).toFixed(4)), Number(decC.toFixed(4)), { title: t.spectrumClick });
   app.emit("click", { ra: state.ra + east / 3600 / Math.cos((state.dec * Math.PI) / 180), dec: state.dec + north / 3600 });
 });
+function renderPicker() {
+  $("picker").innerHTML = `<span class="label">${t.pick}</span>` + presets.map((p) => `<button type="button" class="pick" data-id="${p.id}" aria-pressed="false"><span class="dot ${TARGET_INFO[p.id].tag}"></span>${esc(p.name[LANG])}</button>`).join("")
+    + `<a class="pick" ${linkAttrs("map")}>+ ${t.pickCustom}</a>`;
+  $("picker").querySelectorAll("button[data-id]").forEach((b) => (b.onclick = () => {
+    const pr = presetById(b.dataset.id);
+    if (current === "target") navigate("target", { id: pr.id });
+    else loadTarget(pr);
+  }));
+}
 function selectTab(name) {
   for (const n of ["target", "layers", "measure", "share"]) {
     $(`tab-${n}`).setAttribute("aria-selected", String(n === name));
@@ -927,7 +1180,7 @@ $("suggest").addEventListener("click", (e) => {
   if (b.dataset.id) { $("q").value = ""; navigate("target", { id: b.dataset.id }); }
   else { $("q").value = b.dataset.q; $("search").requestSubmit(); }
 });
-document.addEventListener("click", (e) => { if (!e.target.closest("#search")) $("suggest").hidden = true; });
+document.addEventListener("click", (e) => { if (!e.target.closest("#search")) { $("suggest").hidden = true; $("search").classList.remove("open"); $("search-toggle").setAttribute("aria-expanded", "false"); } });
 $("search").addEventListener("submit", async (e) => {
   e.preventDefault();
   const q = $("q").value.trim();
@@ -969,6 +1222,12 @@ function tour(start = 0) {
   step();
 }
 $("tour-btn").onclick = () => tour(0);
+$("search-toggle").onclick = () => {
+  const open = !$("search").classList.contains("open");
+  $("search").classList.toggle("open", open);
+  $("search-toggle").setAttribute("aria-expanded", String(open));
+  if (open) $("q").focus();
+};
 
 // ---------------------------------------------------------------------------
 // start
@@ -978,7 +1237,9 @@ async function start() {
   renderLang();
   $("play").textContent = t.play;
   presets = await (await fetch("/api/targets")).json();
+  CATALOG = await fetch("data/catalog.json").then((r) => r.json()).catch(() => null);
   renderFooter();
+  renderPicker();
   const names = await (await fetch("/api/modules")).json();
   for (const name of names) {
     try { (await import(`./modules/${name}`)).init(app); } catch (e) { console.error(`module ${name} failed to load`, e); }

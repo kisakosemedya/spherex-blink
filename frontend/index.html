@@ -10,7 +10,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500&family=Orbitron:wght@400;500&family=Oxanium:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=2">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/aladin-lite@3.8.2/dist/aladin.js" crossorigin>
+<link rel="preconnect" href="https://irsa.ipac.caltech.edu" crossorigin>
 </head>
 <body>
 <a class="sr" href="#main">Skip to content</a>
@@ -27,14 +29,15 @@
     </ul>
   </nav>
   <div class="nav-tools">
-    <div class="lang" id="lang"></div>
+    <div class="lang" id="lang" role="group" aria-label="Language"></div>
     <form class="search" id="search" role="search" autocomplete="off">
+      <button class="icon-btn search-toggle" type="button" id="search-toggle" aria-expanded="false" aria-controls="q"><span class="sr" data-t="search"></span><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M16 16l4 4"/></svg></button>
       <label class="sr" for="q" data-t="search"></label>
       <input id="q" type="search" data-t-ph="search" spellcheck="false" aria-describedby="q-hint" aria-autocomplete="list" aria-controls="suggest">
       <span class="sr" id="q-hint" data-t="searchHint"></span>
       <ul class="suggest" id="suggest" role="listbox" hidden></ul>
     </form>
-    <button class="btn btn--sm nav-open" id="tour-btn" type="button" data-t="tour"></button>
+    <button class="btn btn--sm btn--plain nav-open tour-btn" id="tour-btn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M9.5 9.5a2.5 2.5 0 114 2c-.9.6-1.5 1.1-1.5 2.2M12 17h.01"/></svg><span class="t" data-t="tour"></span></button>
     <a class="btn btn--primary btn--sm nav-open" href="?view=observations" data-link="observations" data-t="open"></a>
     <button class="icon-btn menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="menu">
       <span class="sr" data-t="menu"></span>
@@ -61,6 +64,7 @@
         <h1 id="ws-name"></h1>
         <span class="mono" id="ws-meta"></span>
       </div>
+      <div class="picker" id="picker" role="group"></div>
       <div class="stage-box">
         <div class="stage crop" id="stage" tabindex="0">
           <i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
@@ -114,7 +118,7 @@
       </div>
       <div class="tab-body" role="tabpanel" id="pane-target"></div>
       <div class="tab-body" role="tabpanel" id="pane-layers" hidden></div>
-      <div class="tab-body" role="tabpanel" id="pane-measure" hidden><p class="muted" data-t="measureHelp"></p></div>
+      <div class="tab-body" role="tabpanel" id="pane-measure" hidden><p class="muted" data-t="measureHelp"></p><div class="spec-click" id="spec-click"></div></div>
       <div class="tab-body share-box" role="tabpanel" id="pane-share" hidden></div>
     </aside>
   </section>
@@ -123,6 +127,6 @@
 <footer id="footer"></footer>
 <div class="tour" id="tour" hidden role="dialog" aria-live="polite"></div>
 
-<script type="module" src="app.js"></script>
+<script type="module" src="app.js?v=2"></script>
 </body>
 </html>
