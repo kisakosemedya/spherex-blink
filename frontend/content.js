@@ -562,3 +562,15 @@ export const DETECTORS = {
   3: { wl: [1.64, 2.44], ch: 17, R: [40, 42] }, 4: { wl: [2.42, 3.83], ch: 17, R: [34, 42] },
   5: { wl: [3.81, 4.43], ch: 17, R: [108, 117] }, 6: { wl: [4.42, 5.01], ch: 17, R: [125, 135] },
 };
+
+// Loading stages shown while a new field is fetched from the archive
+Object.assign(T.en, {
+  stages: ["Asking the NASA archive which exposures cover this field…", "Reading the pixels from the public AWS copy…", "Lining up and stacking each visit…", "Almost there…"],
+  waitHint: "New fields take about 20–40 seconds the first time; the five targets open at once.",
+  seconds: "s",
+});
+Object.assign(T.tr, {
+  stages: ["NASA arşivine bu alanı kapsayan pozlar soruluyor…", "Pikseller AWS’deki açık kopyadan okunuyor…", "Her ziyaret hizalanıp üst üste ekleniyor…", "Neredeyse bitti…"],
+  waitHint: "Yeni bir alan ilk seferde yaklaşık 20–40 saniye sürer; beş hedef anında açılır.",
+  seconds: "sn",
+});

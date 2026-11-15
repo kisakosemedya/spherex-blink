@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500&family=Orbitron:wght@400;500&family=Oxanium:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/aladin-lite@3.8.2/dist/aladin.js" crossorigin>
 <link rel="preconnect" href="https://irsa.ipac.caltech.edu" crossorigin>
 </head>
@@ -75,6 +75,7 @@
             <div>
               <div class="spinner" id="spinner"></div>
               <p id="veil-text" role="status"></p>
+              <p class="veil-wait" id="veil-wait" hidden></p>
               <button class="btn btn--sm" id="retry" type="button" data-t="retry" hidden></button>
               <p class="fact" id="veil-fact"></p>
             </div>
@@ -127,6 +128,6 @@
 <footer id="footer"></footer>
 <div class="tour" id="tour" hidden role="dialog" aria-live="polite"></div>
 
-<script type="module" src="app.js?v=3"></script>
+<script type="module" src="app.js?v=4"></script>
 </body>
 </html>

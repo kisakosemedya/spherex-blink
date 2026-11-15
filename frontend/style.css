@@ -672,3 +672,11 @@ body.embed #view-observations .ws { margin-top: 0; height: 100svh; }
 .mapview .hero-map { opacity: 1; }
 /* keep "µm" as written: upper-casing turns µ into a Greek capital M */
 #wl { text-transform: none; }
+
+/* loading a new field: a clearly visible, moving wait state */
+.veil.is-busy #veil-text { font: 500 1.125rem/1.4 var(--display); letter-spacing: .03em; text-transform: uppercase; color: var(--white); }
+.veil-wait { display: grid; gap: .6rem; justify-items: center; max-width: 26rem; margin: 0 auto; font-size: .8125rem; color: var(--gray); }
+.veil-wait .bar { display: block; width: 14rem; height: 2px; background: var(--dark); overflow: hidden; }
+.veil-wait .bar i { display: block; width: 35%; height: 100%; background: var(--white); animation: wait-bar 1.4s ease-in-out infinite; }
+@keyframes wait-bar { from { transform: translateX(-100%); } to { transform: translateX(290%); } }
+.veil-wait .mono { color: var(--light); }

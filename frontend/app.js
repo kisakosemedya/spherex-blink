@@ -941,6 +941,7 @@ function setMode(mode) {
   else showFrame(state.frameIndex);
   syncUrl();
 }
+let waitTimer = null;
 function veil(text, { retry = false, busy = false } = {}) {
   $("veil").hidden = !text;
   $("veil-text").innerText = text || "";
@@ -949,6 +950,21 @@ function veil(text, { retry = false, busy = false } = {}) {
   clearInterval(factTimer);
   const fact = $("veil-fact");
   fact.innerHTML = "";
+  clearInterval(waitTimer);
+  $("veil").classList.toggle("is-busy", busy);
+  const wait = $("veil-wait");
+  if (wait) wait.hidden = !busy || text !== t.loading;
+  if (busy && text === t.loading) {
+    // a new field can take half a minute: show that the work is moving
+    const start = Date.now();
+    const tick = () => {
+      const s = Math.floor((Date.now() - start) / 1000);
+      const stage = t.stages[Math.min(t.stages.length - 1, s < 4 ? 0 : s < 15 ? 1 : s < 30 ? 2 : 3)];
+      $("veil-text").innerText = stage;
+      $("veil-wait").innerHTML = `<span class="bar"><i></i></span><span class="mono">${s} ${t.seconds}</span><span>${t.waitHint}</span>`;
+    };
+    tick(); waitTimer = setInterval(tick, 1000);
+  }
   if (busy) {
     let k = Math.floor(Math.random() * FACTS[LANG].length);
     const showFact = () => { fact.innerHTML = `<b>${t.loadingFacts}</b>${FACTS[LANG][k]}`; k = (k + 1) % FACTS[LANG].length; };
